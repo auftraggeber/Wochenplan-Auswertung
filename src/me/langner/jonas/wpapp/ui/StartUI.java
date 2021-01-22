@@ -1,0 +1,400 @@
+package me.langner.jonas.wpapp.ui;
+
+import me.langner.jonas.wpapp.WPAPP;
+import me.langner.jonas.wpapp.listener.FactoryChangeListener;
+import me.langner.jonas.wpapp.objects.Machine;
+import me.langner.jonas.wpapp.objects.StaffEntry;
+import me.langner.jonas.wpapp.objects.Tool;
+import me.langner.jonas.wpapp.xml.WochenplanFileReader;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class StartUI extends Frame {
+
+    private String[] tableHeaders = new String[]{
+            "Datum",
+            "Schicht",
+            "Maschine",
+            "Werkzeug",
+            "Werker"
+    };
+    private List<StaffEntry> lastEntries;
+    private boolean autoChanged = false;
+
+    private JLabel machineTitle = new JLabel("Maschinen", JLabel.CENTER);
+    private JLabel toolTitle = new JLabel("Werkzeuge", JLabel.CENTER);
+    private JLabel informationTitle = new JLabel("Informationen", JLabel.CENTER);
+
+    private JList machineList = new JList(new String[0]);
+    private JScrollPane machineScrollPane = new JScrollPane(machineList);
+
+    private JList toolList = new JList(new String[0]);
+    private JScrollPane toolScrollPane = new JScrollPane(toolList);
+
+    private JPanel informationPanel = new JPanel();
+    private JLabel topInfoText = new JLabel("");
+    private JLabel sumInfoText = new JLabel("");
+
+    private JButton resetMachine = new JButton("Alles abwählen");
+    private JButton resetTool = new JButton("Alles abwählen");
+
+    private JTable table = new JTable(new Object[0][] , tableHeaders);
+    private JScrollPane tableScrollPane = new JScrollPane(table);
+    private JPanel tablePanel = new JPanel();
+
+    private JCheckBox onlyWorking = new JCheckBox("Nur Werte mit Werkern anzeigen");
+
+    private JButton moreData = new JButton("Weitere Datei einbinden");
+
+    public StartUI() {
+        super("WPAPP Auswertung", 1300, 1000);
+
+        /* Stile setzen */
+        machineTitle.setFont(machineTitle.getFont().deriveFont(Font.BOLD));
+        toolTitle.setFont(toolTitle.getFont().deriveFont(Font.BOLD));
+        informationTitle.setFont(informationPanel.getFont().deriveFont(Font.BOLD));
+        machineTitle.setBounds(10,0,250,60);
+        toolTitle.setBounds(270,0,250,60);
+        informationTitle.setBounds(530, 0, getWidth()-520, 60);
+
+        machineScrollPane.setBackground(Color.WHITE);
+        machineScrollPane.setBounds(10,40, 250, 830);
+
+        toolScrollPane.setBackground(Color.WHITE);
+        toolScrollPane.setBounds(270, 40, 250, 830);
+
+        informationPanel.setBounds(540, 40, getWidth()-560, 70);
+        informationPanel.setBackground(Color.WHITE);
+        informationPanel.setLayout(new FlowLayout());
+
+        resetMachine.setBounds(10, 873, 250, 45);
+        resetTool.setBounds(270, 873, 250, 45);
+
+        tablePanel.setBounds(540, 115, getWidth()-560, getHeight() - 200);
+        tablePanel.setLayout(new BorderLayout());
+        table.setFillsViewportHeight(true);
+        tableScrollPane.setBounds(10,120, tablePanel.getWidth() - 20, tablePanel.getHeight() - 130);
+        tablePanel.add(tableScrollPane);
+
+        onlyWorking.setBounds(540, getHeight() - 100, getWidth() - 560, 50);
+
+        moreData.setBounds(6, getHeight()-80, 518, 30);
+
+        addInformationElements();
+
+        /* zu frame hinzufügen */
+        addToPanel(machineTitle);
+        addToPanel(toolTitle);
+        addToPanel(informationTitle);
+
+        addToPanel(machineScrollPane);
+        addToPanel(toolScrollPane);
+
+        addToPanel(informationPanel);
+
+        addToPanel(resetMachine);
+        addToPanel(resetTool);
+        addToPanel(tablePanel);
+
+        addToPanel(onlyWorking);
+
+        addToPanel(moreData);
+
+        /* events hinzufügen */
+        addListeners();
+
+        /* anzeigen */
+        reload();
+        open();
+
+        /* Datei auswählen */
+        new WochenplanFileReader();
+    }
+
+    /**
+     * Fügt Events/Listener hinzu.
+     */
+    private void addListeners() {
+        /* auf updates überprüfen */
+        WPAPP.WOCHENPLAN.addListener(new FactoryChangeListener() {
+            @Override
+            public void machineAdded(Machine machine) {
+                updateList(machineList, WPAPP.WOCHENPLAN.getMachines().toArray());
+            }
+
+            @Override
+            public void toolAdded(Tool tool) {
+                updateList(toolList, WPAPP.WOCHENPLAN.getTools().toArray());
+            }
+
+            @Override
+            public void machineRemoved(Machine machine) {
+                updateList(machineList, WPAPP.WOCHENPLAN.getMachines().toArray());
+            }
+
+            @Override
+            public void toolRemoved(Tool tool) {
+                updateList(toolList, WPAPP.WOCHENPLAN.getTools().toArray());
+            }
+        });
+
+        /* überprüfen, ob neues selektiert (Maschine) */
+        machineList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                machineSelectionChanged();
+            }
+        });
+
+        /* überprüfen, ob neues selektiert (Werkzeug) */
+        toolList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                toolSelectionChanged();
+                if (!autoChanged)
+                    resetSelection(machineList);
+            }
+        });
+
+        /* überprüfen, ob Selektion löschen (Maschine) */
+        resetMachine.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                resetSelection(machineList);
+                toolSelectionChanged();
+            }
+        });
+
+        /* überprüfen, ob Selektion löschen (Werkzeug) */
+        resetTool.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                resetSelection(toolList);
+                machineSelectionChanged();
+            }
+        });
+
+        /* überprüfen, ob Check geklickt wurde */
+        onlyWorking.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                buildTable();
+            }
+        });
+
+        /* ob noch eine Datei geöffnet werden soll */
+        moreData.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new WochenplanFileReader();
+            }
+        });
+    }
+
+    /**
+     * Wird aufgerufen, wenn sich die Auswahl der Maschinen geändert hat.
+     */
+    private void machineSelectionChanged() {
+        java.util.List<String> selection = machineList.getSelectedValuesList();
+        java.util.List<StaffEntry> entries = new ArrayList<>();
+
+        /* alle einträge hinzufügen */
+        selection.forEach((selectedName) -> {
+            Machine machine = WPAPP.WOCHENPLAN.getMachineByName(selectedName);
+            java.util.List<Integer> newSelection = new ArrayList<>();
+
+            /* alle zugehörigen Tools selektieren */
+            machine.getTools().forEach((tool) -> {
+
+                /* überprüfen, ob Tool dabei ist */
+                for (int i = 0; i < toolList.getModel().getSize(); i++) {
+                    if (toolList.getModel().getElementAt(i).equals(tool.getName())) {
+                        // Tool ist dabei - zur neuen Auswahl hinzufügen
+                        if (!newSelection.contains(i))
+                            newSelection.add(i);
+                        break;
+                    }
+                }
+            });
+
+            /* in array umwandeln */
+            int[] newArray = new int[newSelection.size()];
+
+            for (int i = 0; i < newSelection.size(); i++) {
+                newArray[i] = newSelection.get(i);
+            }
+
+            /* selektieren */
+            autoChanged = true;
+            toolList.setSelectedIndices(newArray);
+            autoChanged = false;
+
+            /* da maschine ausgewählt auch nur daten, die mit der Maschine in verbindung stehen, verwenden */
+            machine.getEntries().forEach((entry) -> {
+                if (!entries.contains(entry))
+                    entries.add(entry);
+            });
+        });
+
+        /* updaten */
+        showInformation(entries);
+    }
+
+    /**
+     * Wird aufgerufen, wenn sich die Auswahl der Werkzuege geändert hat.
+     */
+    private void toolSelectionChanged() {
+        java.util.List<String> selection = toolList.getSelectedValuesList();
+        java.util.List<StaffEntry> entries = new ArrayList<>();
+
+        /* alle einträge hinzufügen */
+        selection.forEach((selectedName) -> {
+            Tool tool = WPAPP.WOCHENPLAN.getToolByName(selectedName);
+
+            tool.getEntries().forEach((entry) -> {
+                if (!entries.contains(entry))
+                    entries.add(entry);
+            });
+        });
+
+        /* updaten */
+        showInformation(entries);
+    }
+
+    /**
+     * Setzt die Auswahl einer JList zurück
+     * @param list Die Liste.
+     */
+    private void resetSelection(JList list) {
+        list.setSelectedIndices(new int[0]);
+    }
+
+    /**
+     * Fügt Elemente zu einem Panel hinzu.
+     */
+    private void addInformationElements() {
+
+        /* Stil setzen */
+        topInfoText.setBounds(10,10, informationPanel.getWidth() - 20, 50);
+        sumInfoText.setBounds(10, 60, informationPanel.getWidth() - 20, 50);
+
+        /* hinzufügen */
+        informationPanel.add(topInfoText);
+        informationPanel.add(sumInfoText);
+    }
+
+    /**
+     * Setzt neue Werte in eine JList.
+     * @param list Die JList, die geändert werden soll.
+     * @param elementList Liste mit neuen Werten.
+     */
+    private void updateList(JList list, Object[] elementList) {
+        String[] content = new String[elementList.length];
+
+        /* Zu Array konvertieren */
+        int i = 0;
+        for (Object element : elementList) {
+            content[i] = element.toString();
+            i++;
+        }
+
+        /* setzen */
+        list.setListData(content);
+
+        /* neu laden */
+        reload();
+
+        /* mit 50ms Verzögerung neu laden */
+        java.util.Timer timer = new java.util.Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                /* neu laden */
+                reload();
+            }
+        },50);
+    }
+
+    /**
+     * Lädt die Infos neu.
+     * @param entries Liste der gewählten Einträge.
+     */
+    private void showInformation(List<StaffEntry> entries) {
+        topInfoText.setText("Sie haben " + entries.size() + " Einträge gewählt.");
+
+        /* Summe bilden */
+        float sum = 0;
+        for (StaffEntry entry : entries) {
+            sum += entry.getValue();
+        }
+
+        sumInfoText.setText("Im Zeitraum vom " + WPAPP.WOCHENPLAN.getPeriod().getStartDisplay() + " bis " + WPAPP.WOCHENPLAN.getPeriod().getEndDisplay()
+                + " standen " + sum + " Werker an dieser Auswahl.");
+
+        /* speichern für neuladen */
+        lastEntries = entries;
+
+        buildTable();
+    }
+
+    /**
+     * Erstellt die Tabelle.
+     */
+    private void buildTable() {
+        List<StaffEntry> entries = (lastEntries != null && !onlyWorking.isSelected()) ? lastEntries : new ArrayList<>();
+
+        /* überprüfen, ob gekürzt werden muss */
+        if (onlyWorking.isSelected()) {
+            // muss gekürzt werden
+
+            for (StaffEntry entry : lastEntries) {
+
+                /* wenn kein Wert -> ausblenden */
+                if (entry.getValue() > 0) {
+                    // ausblenden
+                    entries.add(entry);
+                }
+            }
+        }
+
+        /* Reihen für Tabelle erstellen */
+        Object[][] rows = new Object[entries.size()][5];
+
+        /* Reihen lesen & Daten eintragen */
+        for (int i = 0; i < entries.size(); i++) {
+            StaffEntry entry = entries.get(i);
+
+            /* Reihe erstellen */
+            rows[i] = new Object[] {
+                    WPAPP.DISPLAY_FORMAT.format(entry.getDate()),
+                    WPAPP.getShiftName(entry.getShift()),
+                    entry.getMachine().getName(),
+                    entry.getTool().getName(),
+                    entry.getValue()
+            };
+        }
+
+        /* Daten zurücksetzen */
+        DefaultTableModel model = new DefaultTableModel();
+
+        /* Daten in Tabelle einfügen */
+        model.setDataVector(rows, tableHeaders);
+
+        table.setModel(model);
+
+        /* Daten neu laden */
+        reload();
+    }
+}
