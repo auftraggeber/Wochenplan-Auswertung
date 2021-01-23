@@ -1,5 +1,6 @@
 package me.langner.jonas.wpapp;
 
+import com.sun.tools.javadoc.Start;
 import me.langner.jonas.wpapp.listener.FactoryChangeListener;
 import me.langner.jonas.wpapp.objects.*;
 import me.langner.jonas.wpapp.ui.Frame;
@@ -11,6 +12,7 @@ import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -45,6 +47,12 @@ public class WPAPP {
     }
 
     public static void main(String[] args) {
-        new StartUI();
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new StartUI();
+            }
+        });
+
     }
 }

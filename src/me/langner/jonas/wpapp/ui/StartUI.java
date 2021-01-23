@@ -15,6 +15,8 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.math.BigDecimal;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,69 +61,105 @@ public class StartUI extends Frame {
 
     private JButton moreData = new JButton("Weitere Datei einbinden");
 
+    private JLabel selectedSumLabel[] = new JLabel[2];
+    private JPanel selectedSumPanel = new JPanel();
+
     public StartUI() {
-        super("WPAPP Auswertung", 1300, 1000);
+        super("WPAPP Auswertung", 1500, 1300);
+
+        setMinWidth(1100);
 
         /* Stile setzen */
         machineTitle.setFont(machineTitle.getFont().deriveFont(Font.BOLD));
         toolTitle.setFont(toolTitle.getFont().deriveFont(Font.BOLD));
         informationTitle.setFont(informationPanel.getFont().deriveFont(Font.BOLD));
-        machineTitle.setBounds(10,0,250,60);
-        toolTitle.setBounds(270,0,250,60);
-        informationTitle.setBounds(530, 0, getWidth()-520, 60);
 
         machineScrollPane.setBackground(Color.WHITE);
-        machineScrollPane.setBounds(10,40, 250, 830);
 
         toolScrollPane.setBackground(Color.WHITE);
-        toolScrollPane.setBounds(270, 40, 250, 830);
 
-        informationPanel.setBounds(540, 40, getWidth()-560, 70);
         informationPanel.setBackground(Color.WHITE);
         informationPanel.setLayout(new FlowLayout());
 
-        resetMachine.setBounds(10, 873, 250, 45);
-        resetTool.setBounds(270, 873, 250, 45);
-
-        tablePanel.setBounds(540, 115, getWidth()-560, getHeight() - 200);
         tablePanel.setLayout(new BorderLayout());
         table.setFillsViewportHeight(true);
+        table.setShowGrid(true);
+        table.setGridColor(Color.LIGHT_GRAY);
+        table.setAutoCreateRowSorter(true);
+        table.getTableHeader().setBackground(new Color(225,225,225));
         tableScrollPane.setBounds(10,120, tablePanel.getWidth() - 20, tablePanel.getHeight() - 130);
         tablePanel.add(tableScrollPane);
 
-        onlyWorking.setBounds(540, getHeight() - 100, getWidth() - 560, 50);
+        selectedSumPanel.setBackground(Color.WHITE);
+        selectedSumPanel.setLayout(null);
+        selectedSumLabel[0] = new JLabel("Ausgewähltes Personal: 0.0");
+        selectedSumLabel[1] = new JLabel("Ausgewählte Rüstzeit: 0.0h");
+        selectedSumPanel.add(selectedSumLabel[0]);
+        selectedSumPanel.add(selectedSumLabel[1]);
 
-        moreData.setBounds(6, getHeight()-80, 518, 30);
+        onlyWorking.setSelected(true);
 
         addInformationElements();
+        setBounds();
 
         /* zu frame hinzufügen */
-        addToPanel(machineTitle);
-        addToPanel(toolTitle);
-        addToPanel(informationTitle);
-
-        addToPanel(machineScrollPane);
-        addToPanel(toolScrollPane);
-
-        addToPanel(informationPanel);
-
-        addToPanel(resetMachine);
-        addToPanel(resetTool);
-        addToPanel(tablePanel);
-
-        addToPanel(onlyWorking);
-
-        addToPanel(moreData);
+        addToPanel(
+                machineTitle,
+                toolTitle,
+                informationTitle,
+                machineScrollPane,
+                toolScrollPane,
+                informationPanel,
+                resetMachine,
+                resetTool,
+                tablePanel,
+                onlyWorking,
+                moreData,
+                selectedSumPanel
+        );
 
         /* events hinzufügen */
         addListeners();
 
-        /* anzeigen */
-        reload();
         open();
 
         /* Datei auswählen */
         new WochenplanFileReader();
+
+        /* anzeigen */
+        reload();
+    }
+
+    /**
+     * Passt Elemente von ihrer Größe an.
+     */
+    private void setBounds() {
+        machineTitle.setBounds(10,0,250,60);
+        toolTitle.setBounds(270,0,250,60);
+        informationTitle.setBounds(530, 0, getWidth()-520, 60);
+
+        machineScrollPane.setBounds(10,40, 250, getHeight() - 170);
+
+        toolScrollPane.setBounds(270, 40, 250, getHeight() - 170);
+
+        informationPanel.setBounds(540, 40, getWidth()-560, 70);
+
+        resetMachine.setBounds(10, getHeight() - 127, 250, 45);
+        resetTool.setBounds(270, getHeight() - 127, 250, 45);
+
+        tablePanel.setBounds(540, 115, getWidth()-560, getHeight() - 200);
+
+        onlyWorking.setBounds(540, getHeight() - 80, 200, 30);
+
+        moreData.setBounds(6, getHeight()-80, 518, 30);
+
+        selectedSumPanel.setBounds( 750, getHeight() - 80, getWidth() - 770, 40);
+        selectedSumLabel[0].setBounds(0,0, selectedSumPanel.getWidth(), 20);
+        selectedSumLabel[1].setBounds(0,20, selectedSumPanel.getWidth(), 20);
+
+        topInfoText.setBounds(10,10, informationPanel.getWidth() - 20, 20);
+        sumInfoText[0].setBounds(10, 30, informationPanel.getWidth() - 20, 20);
+        sumInfoText[1].setBounds(10, 50, informationPanel.getWidth() - 20, 20);
     }
 
     /**
@@ -204,6 +242,14 @@ public class StartUI extends Frame {
                 new WochenplanFileReader();
 
                 reload();
+            }
+        });
+
+        /* schauen, ob reihen ausgewählt wurden (Tabelle) */
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                updateSelectedTotals();
             }
         });
     }
@@ -295,11 +341,8 @@ public class StartUI extends Frame {
     private void addInformationElements() {
 
         /* Stil setzen */
-        topInfoText.setBounds(10,10, informationPanel.getWidth() - 20, 50);
         sumInfoText[0] = new JLabel();
-        sumInfoText[0].setBounds(10, 60, informationPanel.getWidth() - 20, 100);
         sumInfoText[1] = new JLabel();
-        sumInfoText[1].setBounds(10, 60, informationPanel.getWidth() - 20, 100);
 
         /* hinzufügen */
         informationPanel.add(topInfoText);
@@ -423,6 +466,36 @@ public class StartUI extends Frame {
     }
 
     /**
+     * Berechnet die ausgewählten Summen und zeigt sie an.
+     */
+    private void updateSelectedTotals() {
+        /* Selektierten Reihen auswählen */
+        int[] rows = table.getSelectedRows();
+
+        float totalStaff = 0F;
+        BigDecimal preparationSum = new BigDecimal(0.0);
+        preparationSum.setScale(2);
+
+        /* für jede Reihe Daten auslesen */
+        for (int row : rows) {
+            /* Personal auslesen */
+            float staff = (float) table.getModel().getValueAt(row, 4);
+            totalStaff += staff;
+
+            /* Rüstzeit auslesen */
+            String preparation = (String) table.getModel().getValueAt(row, 5);
+            try {
+                preparationSum = preparationSum.add(new BigDecimal(String.valueOf(preparation.replaceAll("h",""))));
+            }
+            catch (Exception ex) {}
+        }
+
+        /* anzeigen */
+        selectedSumLabel[0].setText("Ausgewähltes Personal: " + totalStaff);
+        selectedSumLabel[1].setText("Ausgewählte Rüstzeit: " + preparationSum.toString() + "h");
+    }
+
+    /**
      * Ermittelt, wie die Rüstung angezeigt wird.
      * @param entry Der Eintrag mit Rüstung.
      * @return Die Anzeige.
@@ -432,11 +505,17 @@ public class StartUI extends Frame {
         /* ermitteln, ob Rüstung */
         if (entry.hasPreparation()) {
             // Rüstzeit ermitteln
-            float timeInHours = entry.getTool().getPreparationTime() / 60;
+            BigDecimal timeInHours = new BigDecimal(String.valueOf(entry.getTool().getPreparationTime() / 60));
 
             /* ausgabe */
             return timeInHours + "h";
         }
         return "-----";
+    }
+
+    @Override
+    public void onResize(ComponentEvent event) {
+        setBounds();
+        reload();
     }
 }

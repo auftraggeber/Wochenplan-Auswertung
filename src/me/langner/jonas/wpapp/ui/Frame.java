@@ -2,6 +2,8 @@ package me.langner.jonas.wpapp.ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 /**
  * Einfache Fenster mit Standardzeugs.
@@ -9,10 +11,11 @@ import java.awt.*;
  * @version 1.0
  * @since 1.0
  */
-public class Frame extends JFrame {
+public abstract class Frame extends JFrame {
 
     public static final Dimension SCREEN_DIMENSION = Toolkit.getDefaultToolkit().getScreenSize();
     private JPanel panel;
+    private int minHeight = 300, minWidth = 300;
 
     public Frame(String name, int width, int height) {
         super(name);
@@ -23,11 +26,11 @@ public class Frame extends JFrame {
             width = SCREEN_DIMENSION.width;
 
         if (height > SCREEN_DIMENSION.height)
-            height = SCREEN_DIMENSION.height;
+            height = SCREEN_DIMENSION.height - 100;
 
         super.setLayout(null);
         super.setSize(width, height);
-        super.setResizable(false);
+        super.setResizable(true);
 
         super.setLocation((SCREEN_DIMENSION.width - width) / 2, (SCREEN_DIMENSION.height - height) / 2);
 
@@ -37,10 +40,22 @@ public class Frame extends JFrame {
 
         super.setVisible(false);
         super.setDefaultCloseOperation(EXIT_ON_CLOSE);
-    }
 
-    public JPanel getPanel() {
-        return panel;
+        /* Event überprüfen */
+        super.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+
+                if (getHeight() < minHeight)
+                    setSize(getWidth(), minHeight);
+                if (getWidth() < minWidth)
+                    setSize(minWidth, getHeight());
+
+                getPanel().setSize(getSize());
+                onResize(e);
+            }
+        });
     }
 
     /**
@@ -51,6 +66,7 @@ public class Frame extends JFrame {
         panel.setVisible(false);
         panel.setVisible(true);
         super.add(panel);
+
     }
 
     /**
@@ -68,5 +84,40 @@ public class Frame extends JFrame {
      */
     public void addToPanel(Component component) {
         panel.add(component);
+    }
+
+    /**
+     * Fügt Komponenten zur Sicht hinzu.
+     * @param components Array mit Komponenten.
+     */
+    public void addToPanel(Component ... components) {
+        for (Component component : components)
+            addToPanel(component);
+    }
+
+    /**
+     * Methode wird aufgerufen, wenn sich das Fenster verändert.
+     * @param event Das Event mit allen Informationen.
+     */
+    public abstract void onResize(ComponentEvent event);
+
+    public JPanel getPanel() {
+        return panel;
+    }
+
+    public int getMinHeight() {
+        return minHeight;
+    }
+
+    public void setMinHeight(int minHeight) {
+        this.minHeight = minHeight;
+    }
+
+    public int getMinWidth() {
+        return minWidth;
+    }
+
+    public void setMinWidth(int minWidth) {
+        this.minWidth = minWidth;
     }
 }
