@@ -163,9 +163,11 @@ public class StartUI extends Frame {
         toolList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                toolSelectionChanged();
-                if (!autoChanged)
+                if (!autoChanged) {
                     resetSelection(machineList);
+                    toolSelectionChanged();
+                }
+
             }
         });
 
@@ -212,11 +214,11 @@ public class StartUI extends Frame {
     private void machineSelectionChanged() {
         java.util.List<String> selection = machineList.getSelectedValuesList();
         java.util.List<StaffEntry> entries = new ArrayList<>();
+        java.util.List<Integer> newSelection = new ArrayList<>();
 
         /* alle einträge hinzufügen */
         selection.forEach((selectedName) -> {
             Machine machine = WPAPP.WOCHENPLAN.getMachineByName(selectedName);
-            java.util.List<Integer> newSelection = new ArrayList<>();
 
             /* alle zugehörigen Tools selektieren */
             machine.getTools().forEach((tool) -> {
@@ -232,24 +234,27 @@ public class StartUI extends Frame {
                 }
             });
 
-            /* in array umwandeln */
-            int[] newArray = new int[newSelection.size()];
-
-            for (int i = 0; i < newSelection.size(); i++) {
-                newArray[i] = newSelection.get(i);
-            }
-
-            /* selektieren */
-            autoChanged = true;
-            toolList.setSelectedIndices(newArray);
-            autoChanged = false;
-
             /* da maschine ausgewählt auch nur daten, die mit der Maschine in verbindung stehen, verwenden */
             machine.getEntries().forEach((entry) -> {
                 if (!entries.contains(entry))
                     entries.add(entry);
             });
         });
+
+        /* in array umwandeln */
+        int[] newArray = new int[newSelection.size()];
+
+        for (int i = 0; i < newSelection.size(); i++) {
+            newArray[i] = newSelection.get(i);
+        }
+
+        /* selektieren */
+        if (machineList.getSelectedIndices().length > 0) {
+            autoChanged = true;
+            toolList.setSelectedIndices(newArray);
+            autoChanged = false;
+        }
+
 
         /* updaten */
         showInformation(entries);
