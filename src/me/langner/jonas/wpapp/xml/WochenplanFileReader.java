@@ -172,6 +172,7 @@ public class WochenplanFileReader {
                     Date date = null;
                     int shift = -1;
                     float value = -1F;
+                    boolean preparation = false;
 
 
                     for (int j = 0; j < child.getChildNodes().getLength(); j++) {
@@ -224,6 +225,15 @@ public class WochenplanFileReader {
                                     ex.printStackTrace();
                                 }
                                 break;
+                            case "preparation":
+                                // Rüstung
+                                try {
+                                    preparation = Boolean.parseBoolean(infoNode.getTextContent());
+                                }
+                                catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                                break;
                             default:
                                 System.err.println("Fehler: Kann Node nicht interpretieren: " + infoNode.getNodeName());
                                 break;
@@ -234,7 +244,7 @@ public class WochenplanFileReader {
                     /* überprüfen, ob alle notwendigen Elemente angegeben sind */
                     if (machine != null && tool != null && date != null && shift >= 0 && value >= 0) {
                         // alle angegeben -> erstellen
-                        new StaffEntry(machine, tool, date, shift, value);
+                        new StaffEntry(machine, tool, date, shift, value, preparation);
                     }
                 }
             }

@@ -19,6 +19,7 @@ public class StaffEntry {
     private Date date;
     private int shift;
     private float value;
+    private boolean preparation;
 
     /**
      * Erstellt einen neuen Eintrag
@@ -27,13 +28,15 @@ public class StaffEntry {
      * @param date Das Datum des Eintrags.
      * @param shift Die Schicht (0=FS, 1=SS, 2=NS)
      * @param value Der Wert des Eintrags.
+     * @param preparation Gibt an, ob Rüstung oder nicht.
      */
-    public StaffEntry(Machine machine, Tool tool, Date date, int shift, float value) {
+    public StaffEntry(Machine machine, Tool tool, Date date, int shift, float value, boolean preparation) {
         this.machine = machine;
         this.tool = tool;
         this.date = date;
         this.shift = shift;
         this.value = value;
+        this.preparation = preparation;
 
         this.javaID = ++lastJavaID;
 
@@ -43,7 +46,6 @@ public class StaffEntry {
         if (tool != null)
             tool.addEntry(this);
     }
-
     public int getJavaID() {
         return javaID;
     }
@@ -66,6 +68,10 @@ public class StaffEntry {
 
     public float getValue() {
         return value;
+    }
+
+    public boolean hasPreparation() {
+        return preparation;
     }
 
     @Override

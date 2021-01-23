@@ -28,7 +28,8 @@ public class StartUI extends Frame {
             "Schicht",
             "Maschine",
             "Werkzeug",
-            "Werker"
+            "Werker",
+            "Rüstung"
     };
     private List<StaffEntry> lastEntries;
     private boolean autoChanged = false;
@@ -54,7 +55,7 @@ public class StartUI extends Frame {
     private JScrollPane tableScrollPane = new JScrollPane(table);
     private JPanel tablePanel = new JPanel();
 
-    private JCheckBox onlyWorking = new JCheckBox("Nur Werte mit Werkern anzeigen");
+    private JCheckBox onlyWorking = new JCheckBox("Nullwerte ausblenden");
 
     private JButton moreData = new JButton("Weitere Datei einbinden");
 
@@ -336,12 +337,20 @@ public class StartUI extends Frame {
 
         /* Summe bilden */
         float sum = 0;
+        float preparationSum = 0F;
         for (StaffEntry entry : entries) {
             sum += entry.getValue();
+
+            if (entry.hasPreparation()) {
+                preparationSum += entry.getTool().getPreparationTime();
+            }
         }
 
+        /* in Stunden zusammenfassen */
+        preparationSum = Math.round(preparationSum / 6) / 10;
+
         sumInfoText.setText("Im Zeitraum vom " + WPAPP.WOCHENPLAN.getPeriod().getStartDisplay() + " bis " + WPAPP.WOCHENPLAN.getPeriod().getEndDisplay()
-                + " standen " + sum + " Werker an dieser Auswahl.");
+                + " standen " + sum + " Werker an dieser Auswahl.\nDie Rüstzeit betrug " + preparationSum + " Stunden.");
 
         /* speichern für neuladen */
         lastEntries = entries;
@@ -356,13 +365,13 @@ public class StartUI extends Frame {
         List<StaffEntry> entries = (lastEntries != null && !onlyWorking.isSelected()) ? lastEntries : new ArrayList<>();
 
         /* überprüfen, ob gekürzt werden muss */
-        if (onlyWorking.isSelected()) {
+        if (onlyWorking.isSelected() && lastEntries != null) {
             // muss gekürzt werden
 
             for (StaffEntry entry : lastEntries) {
 
                 /* wenn kein Wert -> ausblenden */
-                if (entry.getValue() > 0) {
+                if (entry.getValue() > 0 || entry.hasPreparation()) {
                     // ausblenden
                     entries.add(entry);
                 }
@@ -382,7 +391,8 @@ public class StartUI extends Frame {
                     WPAPP.getShiftName(entry.getShift()),
                     entry.getMachine().getName(),
                     entry.getTool().getName(),
-                    entry.getValue()
+                    entry.getValue(),
+                    getPreparationDisplay(entry)
             };
         }
 
@@ -396,5 +406,23 @@ public class StartUI extends Frame {
 
         /* Daten neu laden */
         reload();
+    }
+
+    /**
+     * Ermittelt, wie die Rüstung angezeigt wird.
+     * @param entry Der Eintrag mit Rüstung.
+     * @return Die Anzeige.
+     */
+    private String getPreparationDisplay(StaffEntry entry) {
+
+        /* ermitteln, ob Rüstung */
+        if (entry.hasPreparation()) {
+            // Rüstzeit ermitteln
+            float timeInHours = Math.round(entry.getTool().getPreparationTime() / 6) / 10;
+
+            /* ausgabe */
+            return timeInHours + "h";
+        }
+        return "-----";
     }
 }
