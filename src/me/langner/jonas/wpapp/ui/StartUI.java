@@ -200,6 +200,8 @@ public class StartUI extends Frame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new WochenplanFileReader();
+
+                reload();
             }
         });
     }
