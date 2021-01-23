@@ -107,7 +107,7 @@ public class WochenplanFileReader {
 
                     /* ZeitPeriode speichern */
                     Period period = new Period(startDate, endDate);
-                    WPAPP.WOCHENPLAN.setPeriod(period);
+                    WPAPP.getWochenplan().setPeriod(period);
                 }
                 catch (Exception ex) {
                     ex.printStackTrace();
@@ -140,7 +140,7 @@ public class WochenplanFileReader {
                     Machine machine = createMachine(machineNode);
 
                     /* Maschine und dessen Werkzeuge hinzufügen */
-                    WPAPP.WOCHENPLAN.addMachine(machine);
+                    WPAPP.getWochenplan().addMachine(machine);
                 }
 
             }
@@ -183,7 +183,7 @@ public class WochenplanFileReader {
                             case "machineid":
                                 // Maschinen-id wurde angegeben
                                 try {
-                                    machine = WPAPP.WOCHENPLAN.getMachineById(Integer.parseInt(infoNode.getTextContent()));
+                                    machine = WPAPP.getWochenplan().getMachineById(Integer.parseInt(infoNode.getTextContent()));
                                 }
                                 catch (Exception ex) {
                                     ex.printStackTrace();
@@ -192,7 +192,7 @@ public class WochenplanFileReader {
                             case "toolid":
                                 // Werkzeug-id wurde angegeben
                                 try {
-                                    tool = WPAPP.WOCHENPLAN.getToolById(Integer.parseInt(infoNode.getTextContent()));
+                                    tool = WPAPP.getWochenplan().getToolById(Integer.parseInt(infoNode.getTextContent()));
                                 }
                                 catch (Exception ex) {
                                     ex.printStackTrace();

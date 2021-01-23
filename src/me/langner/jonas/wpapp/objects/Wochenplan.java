@@ -151,6 +151,14 @@ public class Wochenplan {
         return null;
     }
 
+    @Override
+    public Wochenplan clone() {
+        Wochenplan clone = new Wochenplan();
+        clone.period = period;
+        clone.machines = machines;
+        clone.tools = tools;
+        clone.listeners = listeners;
 
-
+        return clone;
+    }
 }

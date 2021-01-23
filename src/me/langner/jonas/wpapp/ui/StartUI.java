@@ -5,6 +5,7 @@ import me.langner.jonas.wpapp.listener.FactoryChangeListener;
 import me.langner.jonas.wpapp.objects.Machine;
 import me.langner.jonas.wpapp.objects.StaffEntry;
 import me.langner.jonas.wpapp.objects.Tool;
+import me.langner.jonas.wpapp.objects.Wochenplan;
 import me.langner.jonas.wpapp.xml.WochenplanFileReader;
 
 import javax.swing.*;
@@ -64,6 +65,9 @@ public class StartUI extends Frame {
     private JLabel selectedSumLabel[] = new JLabel[2];
     private JPanel selectedSumPanel = new JPanel();
 
+    private Menu menu = new Menu("Aktionen");
+    private MenuItem menuItem = new MenuItem("Zurücksetzen");
+
     public StartUI() {
         super("WPAPP Auswertung", 1500, 1300);
 
@@ -99,6 +103,7 @@ public class StartUI extends Frame {
 
         onlyWorking.setSelected(true);
 
+        buildMenu();
         addInformationElements();
         setBounds();
 
@@ -128,6 +133,23 @@ public class StartUI extends Frame {
 
         /* anzeigen */
         reload();
+    }
+
+    /**
+     * Baut das Menü.
+     */
+    private void buildMenu() {
+        setMenuBar(new MenuBar());
+        menu.add(menuItem);
+        getMenuBar().add(menu);
+
+        /* beim klicken neuen Wochenplan erstellen */
+        menuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                WPAPP.setWochenplan(new Wochenplan());
+            }
+        });
     }
 
     /**
@@ -167,25 +189,25 @@ public class StartUI extends Frame {
      */
     private void addListeners() {
         /* auf updates überprüfen */
-        WPAPP.WOCHENPLAN.addListener(new FactoryChangeListener() {
+        WPAPP.getWochenplan().addListener(new FactoryChangeListener() {
             @Override
             public void machineAdded(Machine machine) {
-                updateList(machineList, WPAPP.WOCHENPLAN.getMachines().toArray());
+                updateList(machineList, WPAPP.getWochenplan().getMachines().toArray());
             }
 
             @Override
             public void toolAdded(Tool tool) {
-                updateList(toolList, WPAPP.WOCHENPLAN.getTools().toArray());
+                updateList(toolList, WPAPP.getWochenplan().getTools().toArray());
             }
 
             @Override
             public void machineRemoved(Machine machine) {
-                updateList(machineList, WPAPP.WOCHENPLAN.getMachines().toArray());
+                updateList(machineList, WPAPP.getWochenplan().getMachines().toArray());
             }
 
             @Override
             public void toolRemoved(Tool tool) {
-                updateList(toolList, WPAPP.WOCHENPLAN.getTools().toArray());
+                updateList(toolList, WPAPP.getWochenplan().getTools().toArray());
             }
         });
 
@@ -264,7 +286,7 @@ public class StartUI extends Frame {
 
         /* alle einträge hinzufügen */
         selection.forEach((selectedName) -> {
-            Machine machine = WPAPP.WOCHENPLAN.getMachineByName(selectedName);
+            Machine machine = WPAPP.getWochenplan().getMachineByName(selectedName);
 
             /* alle zugehörigen Tools selektieren */
             machine.getTools().forEach((tool) -> {
@@ -315,7 +337,7 @@ public class StartUI extends Frame {
 
         /* alle einträge hinzufügen */
         selection.forEach((selectedName) -> {
-            Tool tool = WPAPP.WOCHENPLAN.getToolByName(selectedName);
+            Tool tool = WPAPP.getWochenplan().getToolByName(selectedName);
 
             tool.getEntries().forEach((entry) -> {
                 if (!entries.contains(entry))
@@ -405,7 +427,7 @@ public class StartUI extends Frame {
         /* in Stunden zusammenfassen */
         preparationTimeSum = preparationTimeSum / 60;
 
-        sumInfoText[0].setText("Im Zeitraum vom " + WPAPP.WOCHENPLAN.getPeriod().getStartDisplay() + " bis " + WPAPP.WOCHENPLAN.getPeriod().getEndDisplay()
+        sumInfoText[0].setText("Im Zeitraum vom " + WPAPP.getWochenplan().getPeriod().getStartDisplay() + " bis " + WPAPP.getWochenplan().getPeriod().getEndDisplay()
                 + " standen " + sum + " Werker an dieser Auswahl.");
         sumInfoText[1].setText("Die Rüstzeit betrug " + preparationTimeSum + " Stunden. Es gab insgesamt " + preparations + " Rüstungen.");
 
