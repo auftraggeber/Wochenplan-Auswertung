@@ -46,7 +46,7 @@ public class StartUI extends Frame {
 
     private JPanel informationPanel = new JPanel();
     private JLabel topInfoText = new JLabel("");
-    private JLabel sumInfoText = new JLabel("");
+    private JLabel sumInfoText[] = new JLabel[2];
 
     private JButton resetMachine = new JButton("Alles abwählen");
     private JButton resetTool = new JButton("Alles abwählen");
@@ -289,11 +289,15 @@ public class StartUI extends Frame {
 
         /* Stil setzen */
         topInfoText.setBounds(10,10, informationPanel.getWidth() - 20, 50);
-        sumInfoText.setBounds(10, 60, informationPanel.getWidth() - 20, 50);
+        sumInfoText[0] = new JLabel();
+        sumInfoText[0].setBounds(10, 60, informationPanel.getWidth() - 20, 100);
+        sumInfoText[1] = new JLabel();
+        sumInfoText[1].setBounds(10, 60, informationPanel.getWidth() - 20, 100);
 
         /* hinzufügen */
         informationPanel.add(topInfoText);
-        informationPanel.add(sumInfoText);
+        informationPanel.add(sumInfoText[0]);
+        informationPanel.add(sumInfoText[1]);
     }
 
     /**
@@ -337,20 +341,23 @@ public class StartUI extends Frame {
 
         /* Summe bilden */
         float sum = 0;
-        float preparationSum = 0F;
+        float preparationTimeSum = 0F;
+        int preparations = 0;
         for (StaffEntry entry : entries) {
             sum += entry.getValue();
 
             if (entry.hasPreparation()) {
-                preparationSum += entry.getTool().getPreparationTime();
+                preparationTimeSum += entry.getTool().getPreparationTime();
+                preparations++;
             }
         }
 
         /* in Stunden zusammenfassen */
-        preparationSum = Math.round(preparationSum / 6) / 10;
+        preparationTimeSum = Math.round(preparationTimeSum / 6) / 10;
 
-        sumInfoText.setText("Im Zeitraum vom " + WPAPP.WOCHENPLAN.getPeriod().getStartDisplay() + " bis " + WPAPP.WOCHENPLAN.getPeriod().getEndDisplay()
-                + " standen " + sum + " Werker an dieser Auswahl.\nDie Rüstzeit betrug " + preparationSum + " Stunden.");
+        sumInfoText[0].setText("Im Zeitraum vom " + WPAPP.WOCHENPLAN.getPeriod().getStartDisplay() + " bis " + WPAPP.WOCHENPLAN.getPeriod().getEndDisplay()
+                + " standen " + sum + " Werker an dieser Auswahl.");
+        sumInfoText[1].setText("Die Rüstzeit betrug " + preparationTimeSum + " Stunden. Es gab insgesamt " + preparations + " Rüstungen.");
 
         /* speichern für neuladen */
         lastEntries = entries;
