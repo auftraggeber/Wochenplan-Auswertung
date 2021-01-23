@@ -353,7 +353,7 @@ public class StartUI extends Frame {
         }
 
         /* in Stunden zusammenfassen */
-        preparationTimeSum = Math.round(preparationTimeSum / 6) / 10;
+        preparationTimeSum = preparationTimeSum / 60;
 
         sumInfoText[0].setText("Im Zeitraum vom " + WPAPP.WOCHENPLAN.getPeriod().getStartDisplay() + " bis " + WPAPP.WOCHENPLAN.getPeriod().getEndDisplay()
                 + " standen " + sum + " Werker an dieser Auswahl.");
@@ -425,7 +425,7 @@ public class StartUI extends Frame {
         /* ermitteln, ob Rüstung */
         if (entry.hasPreparation()) {
             // Rüstzeit ermitteln
-            float timeInHours = Math.round(entry.getTool().getPreparationTime() / 6) / 10;
+            float timeInHours = entry.getTool().getPreparationTime() / 60;
 
             /* ausgabe */
             return timeInHours + "h";

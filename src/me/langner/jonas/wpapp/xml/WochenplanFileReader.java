@@ -222,7 +222,28 @@ public class WochenplanFileReader {
                                     value = Float.parseFloat(infoNode.getTextContent());
                                 }
                                 catch (Exception ex) {
-                                    ex.printStackTrace();
+
+                                    try {
+                                        if (infoNode.getTextContent().endsWith(".")) {
+                                            // fehlerhafter punkt am ende -> entfernen
+                                            char chars[] = infoNode.getTextContent().toCharArray();
+                                            String stringValue = "";
+
+                                            // String neu bauen
+                                            for (int c = 0; c < chars.length; c++) {
+
+                                                if (c+1 < chars.length) {
+                                                    stringValue += c;
+                                                }
+                                            }
+
+                                            /* neu probieren */
+                                            value = Float.parseFloat(stringValue);
+                                        }
+                                    }
+                                    catch (Exception ex2) {
+                                        ex2.printStackTrace();
+                                    }
                                 }
                                 break;
                             case "preparation":
