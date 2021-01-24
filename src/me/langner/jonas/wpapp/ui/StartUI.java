@@ -13,6 +13,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -481,7 +482,9 @@ public class StartUI extends Frame {
         /* Daten in Tabelle einfügen */
         model.setDataVector(rows, tableHeaders);
 
+        /* änderungen anwenden */
         table.setModel(model);
+        table.setRowSorter(new TableRowSorter<>(model));
 
         /* Daten neu laden */
         reload();
@@ -491,8 +494,7 @@ public class StartUI extends Frame {
      * Berechnet die ausgewählten Summen und zeigt sie an.
      */
     private void updateSelectedTotals() {
-        /* Selektierten Reihen auswählen */
-        int[] rows = table.getSelectedRows();
+        int rows[] = table.getSelectedRows();
 
         float totalStaff = 0F;
         BigDecimal preparationSum = new BigDecimal(0.0);
@@ -500,12 +502,18 @@ public class StartUI extends Frame {
 
         /* für jede Reihe Daten auslesen */
         for (int row : rows) {
+            /*
+            wichtig: sortierung beachten!
+
+            mit convertRowIndexToModel werden die richtigen indices ausgegeben
+             */
+
             /* Personal auslesen */
-            float staff = (float) table.getModel().getValueAt(row, 4);
+            float staff = (float) table.getModel().getValueAt(table.getRowSorter().convertRowIndexToModel(row), 4);
             totalStaff += staff;
 
             /* Rüstzeit auslesen */
-            String preparation = (String) table.getModel().getValueAt(row, 5);
+            String preparation = (String) table.getModel().getValueAt(table.getRowSorter().convertRowIndexToModel(row), 5);
             try {
                 preparationSum = preparationSum.add(new BigDecimal(String.valueOf(preparation.replaceAll("h",""))));
             }
