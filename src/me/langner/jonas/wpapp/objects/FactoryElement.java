@@ -1,6 +1,9 @@
 package me.langner.jonas.wpapp.objects;
 
+import me.langner.jonas.wpapp.WPAPP;
+
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -66,7 +69,17 @@ public abstract class FactoryElement {
     }
 
     public Set<StaffEntry> getEntries() {
-        return Collections.unmodifiableSet(entries);
+        Set<StaffEntry> filteredEntries = new HashSet<>();
+
+        for (StaffEntry entry : entries) {
+            /* ermitteln, ob im Rahmen */
+            if (entry.getDate().after(WPAPP.getWochenplan().getPeriod().getStart()) &&
+                    entry.getDate().before(WPAPP.getWochenplan().getPeriod().getEnd()))
+                filteredEntries.add(entry);
+        }
+
+        /* filter ausgeben */
+        return Collections.unmodifiableSet(filteredEntries);
     }
 
     public int getId() {

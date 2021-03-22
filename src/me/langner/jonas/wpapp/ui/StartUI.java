@@ -25,6 +25,12 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Ist das HauptUI.
+ * @author Jonas Langner
+ * @version 1.0.1
+ * @since Alpha
+ */
 public class StartUI extends Frame {
 
     private String[] tableHeaders = new String[]{
@@ -68,6 +74,7 @@ public class StartUI extends Frame {
 
     private Menu menu = new Menu("Aktionen");
     private MenuItem menuItem = new MenuItem("Zurücksetzen");
+    private MenuItem menuItemMonthSelect = new MenuItem("Monat wählen");
 
     public StartUI() {
         super("WPAPP Auswertung", 1500, 1300);
@@ -142,6 +149,7 @@ public class StartUI extends Frame {
     private void buildMenu() {
         setMenuBar(new MenuBar());
         menu.add(menuItem);
+        menu.add(menuItemMonthSelect);
         getMenuBar().add(menu);
 
         /* beim klicken neuen Wochenplan erstellen */
@@ -149,6 +157,13 @@ public class StartUI extends Frame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 WPAPP.setWochenplan(new Wochenplan());
+            }
+        });
+
+        menuItemMonthSelect.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new MonthUI();
             }
         });
     }
@@ -161,22 +176,22 @@ public class StartUI extends Frame {
         toolTitle.setBounds(270,0,250,60);
         informationTitle.setBounds(530, 0, getWidth()-520, 60);
 
-        machineScrollPane.setBounds(10,40, 250, getHeight() - 170);
+        machineScrollPane.setBounds(10,40, 250, getHeight() - 190);
 
-        toolScrollPane.setBounds(270, 40, 250, getHeight() - 170);
+        toolScrollPane.setBounds(270, 40, 250, getHeight() - 190);
 
         informationPanel.setBounds(540, 40, getWidth()-560, 70);
 
-        resetMachine.setBounds(10, getHeight() - 127, 250, 45);
-        resetTool.setBounds(270, getHeight() - 127, 250, 45);
+        resetMachine.setBounds(10, getHeight() - 147, 250, 45);
+        resetTool.setBounds(270, getHeight() - 147, 250, 45);
 
-        tablePanel.setBounds(540, 115, getWidth()-560, getHeight() - 200);
+        tablePanel.setBounds(540, 115, getWidth()-560, getHeight() - 220);
 
-        onlyWorking.setBounds(540, getHeight() - 80, 200, 30);
+        onlyWorking.setBounds(540, getHeight() - 100, 200, 30);
 
-        moreData.setBounds(6, getHeight()-80, 518, 30);
+        moreData.setBounds(10, getHeight()-100, 510, 30);
 
-        selectedSumPanel.setBounds( 750, getHeight() - 80, getWidth() - 770, 40);
+        selectedSumPanel.setBounds( 750, getHeight() - 100, getWidth() - 770, 40);
         selectedSumLabel[0].setBounds(0,0, selectedSumPanel.getWidth(), 20);
         selectedSumLabel[1].setBounds(0,20, selectedSumPanel.getWidth(), 20);
 

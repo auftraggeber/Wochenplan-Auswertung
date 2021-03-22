@@ -4,6 +4,7 @@ import me.langner.jonas.wpapp.objects.*;
 import me.langner.jonas.wpapp.ui.StartUI;
 import java.awt.*;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Die Hauptklasse: von hier startet das Program.
