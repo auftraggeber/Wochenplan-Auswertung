@@ -12,17 +12,14 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.math.BigDecimal;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
 import java.util.TimerTask;
 
 /**
@@ -65,7 +62,7 @@ public class StartUI extends Frame {
     private JScrollPane tableScrollPane = new JScrollPane(table);
     private JPanel tablePanel = new JPanel();
 
-    private JCheckBox onlyWorking = new JCheckBox("Nullwerte ausblenden");
+    private JCheckBox onlyWithData = new JCheckBox("Nullwerte ausblenden");
 
     private JButton moreData = new JButton("Weitere Datei einbinden");
 
@@ -109,7 +106,7 @@ public class StartUI extends Frame {
         selectedSumPanel.add(selectedSumLabel[0]);
         selectedSumPanel.add(selectedSumLabel[1]);
 
-        onlyWorking.setSelected(true);
+        onlyWithData.setSelected(true);
 
         buildMenu();
         addInformationElements();
@@ -126,7 +123,7 @@ public class StartUI extends Frame {
                 resetMachine,
                 resetTool,
                 tablePanel,
-                onlyWorking,
+                onlyWithData,
                 moreData,
                 selectedSumPanel
         );
@@ -187,7 +184,7 @@ public class StartUI extends Frame {
 
         tablePanel.setBounds(540, 115, getWidth()-560, getHeight() - 220);
 
-        onlyWorking.setBounds(540, getHeight() - 100, 200, 30);
+        onlyWithData.setBounds(540, getHeight() - 100, 200, 30);
 
         moreData.setBounds(10, getHeight()-100, 510, 30);
 
@@ -266,7 +263,7 @@ public class StartUI extends Frame {
         });
 
         /* überprüfen, ob Check geklickt wurde */
-        onlyWorking.addActionListener(new ActionListener() {
+        onlyWithData.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 buildTable();
@@ -421,6 +418,13 @@ public class StartUI extends Frame {
     }
 
     /**
+     * Lädt die Informationen neu.
+     */
+    public void reloadInformation() {
+        showInformation(lastEntries);
+    }
+
+    /**
      * Lädt die Infos neu.
      * @param entries Liste der gewählten Einträge.
      */
@@ -457,10 +461,10 @@ public class StartUI extends Frame {
      * Erstellt die Tabelle.
      */
     private void buildTable() {
-        List<StaffEntry> entries = (lastEntries != null && !onlyWorking.isSelected()) ? lastEntries : new ArrayList<>();
+        List<StaffEntry> entries = (lastEntries != null && !onlyWithData.isSelected()) ? lastEntries : new ArrayList<>();
 
         /* überprüfen, ob gekürzt werden muss */
-        if (onlyWorking.isSelected() && lastEntries != null) {
+        if (onlyWithData.isSelected() && lastEntries != null) {
             // muss gekürzt werden
 
             for (StaffEntry entry : lastEntries) {

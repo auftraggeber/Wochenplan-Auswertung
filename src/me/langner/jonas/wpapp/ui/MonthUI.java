@@ -81,8 +81,7 @@ public class MonthUI extends Frame {
                     Date end = WPAPP.DISPLAY_FORMAT.parse(dateFields[1].getText());
 
                     WPAPP.getWochenplan().setPeriod(new Period(start,end));
-
-
+                    WPAPP.getUI().reloadInformation();
                 } catch (ParseException parseException) {
                     parseException.printStackTrace();
                 }

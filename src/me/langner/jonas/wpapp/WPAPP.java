@@ -46,6 +46,11 @@ public class WPAPP {
 
     }
 
+
+    public static StartUI getUI() {
+        return ui;
+    }
+
     /**
      * Gibt den Wochenplan zurück. Kein Klon!
      * @return Der originale Wochenplan.
