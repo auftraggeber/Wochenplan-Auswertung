@@ -92,7 +92,7 @@ public class DateField extends JFormattedTextField {
             /* überprüfen, ob es vielleicht schon ein Datum gibt */
             if (period != null && period.getStart() != null)
                 // gibt schon ein Datum -> überschreiben
-                start = WPAPP.DISPLAY_FORMAT.format(WPAPP.getWochenplan().getPeriod().getStart());
+                start = WPAPP.DISPLAY_FORMAT.format(period.getStart());
 
             setText(start);
         }
@@ -102,7 +102,7 @@ public class DateField extends JFormattedTextField {
             /* überprüfen, ob es vielleicht schon ein Datum gibt */
             if (period != null && period.getEnd() != null)
                 // gibt schon ein Datum -> überschreiben
-                end = WPAPP.DISPLAY_FORMAT.format(WPAPP.getWochenplan().getPeriod().getEnd());
+                end = WPAPP.DISPLAY_FORMAT.format(period.getEnd());
 
             setText(end);
         }
