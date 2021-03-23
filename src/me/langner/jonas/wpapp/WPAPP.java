@@ -3,9 +3,12 @@ package me.langner.jonas.wpapp;
 import me.langner.jonas.wpapp.objects.*;
 import me.langner.jonas.wpapp.ui.ErrorUI;
 import me.langner.jonas.wpapp.ui.StartUI;
+import me.langner.jonas.wpapp.ui.WPUI;
 import java.awt.*;
+import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Die Hauptklasse: von hier startet das Program.
@@ -22,7 +25,8 @@ public class WPAPP {
     public static final int SHIFT_EARLY = 0, SHIFT_LATE = 1, SHIFT_NIGHT = 2;
 
     private static Wochenplan wochenplan = new Wochenplan();
-    private static StartUI ui;
+    private static WPUI ui;
+    private static StartUI startUI;
 
     /**
      * Wandelt einen Integer in ein Schichtkürzel um.
@@ -44,18 +48,35 @@ public class WPAPP {
     }
 
     public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
+        try {
+            startUI = new StartUI();
+        }catch (FileNotFoundException ex) {
+            new ErrorUI("Programm möglicherweise unvollständig", ex);
+        }
+
+        (new Timer()).schedule(new TimerTask() {
             @Override
             public void run() {
-                ui = new StartUI();
+                EventQueue.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        ui = new WPUI();
+                    }
+                });
             }
-        });
+        }, 6000);
+
 
     }
 
 
-    public static StartUI getUI() {
+    public static WPUI getUI() {
         return ui;
+    }
+
+    public static StartUI getStartUI() {
+        return startUI;
     }
 
     /**
@@ -73,6 +94,6 @@ public class WPAPP {
     public static void setWochenplan(Wochenplan wp) {
         wochenplan = wp;
         ui.setVisible(false);
-        ui = new StartUI();
+        ui = new WPUI();
     }
 }
