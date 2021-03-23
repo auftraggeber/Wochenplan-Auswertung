@@ -1,4 +1,4 @@
-package me.langner.jonas.wpapp.objects.ui;
+package me.langner.jonas.wpapp.objects.ui.frames;
 
 import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.listener.FactoryChangeListener;
@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +72,7 @@ public class WPUI extends Frame {
 
     private Menu menu = new Menu("Aktionen");
     private MenuItem menuItem = new MenuItem("Zurücksetzen");
-    private MenuItem menuItemMonthSelect = new MenuItem("Monat wählen");
+    private MenuItem menuItemMonthSelect = new MenuItem("Filter anzeigen");
 
     private Runnable reloadRunnable;
 
@@ -136,6 +137,7 @@ public class WPUI extends Frame {
         /* Datei auswählen */
         new WochenplanFileReader();
 
+        open();
         /* anzeigen */
         reload();
     }
@@ -159,6 +161,10 @@ public class WPUI extends Frame {
         menu.add(menuItem);
         menu.add(menuItemMonthSelect);
         getMenuBar().add(menu);
+
+        /* shortcuts hinzufügen */
+        menuItem.setShortcut(new MenuShortcut(KeyEvent.VK_R,false));
+        menuItemMonthSelect.setShortcut(new MenuShortcut(KeyEvent.VK_F, true));
 
         /* beim klicken neuen Wochenplan erstellen */
         menuItem.addActionListener(new ActionListener() {

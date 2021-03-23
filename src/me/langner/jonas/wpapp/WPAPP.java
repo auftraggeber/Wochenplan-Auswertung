@@ -1,9 +1,9 @@
 package me.langner.jonas.wpapp;
 
 import me.langner.jonas.wpapp.objects.*;
-import me.langner.jonas.wpapp.objects.ui.ErrorUI;
-import me.langner.jonas.wpapp.objects.ui.StartUI;
-import me.langner.jonas.wpapp.objects.ui.WPUI;
+import me.langner.jonas.wpapp.objects.ui.frames.ErrorUI;
+import me.langner.jonas.wpapp.objects.ui.frames.StartUI;
+import me.langner.jonas.wpapp.objects.ui.frames.WPUI;
 import java.awt.*;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
@@ -23,8 +23,8 @@ public class WPAPP {
             SQL_FORMAT = new SimpleDateFormat("yyyy-MM-dd"),
             DISPLAY_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
     public static final int SHIFT_EARLY = 0, SHIFT_LATE = 1, SHIFT_NIGHT = 2;
-    public static final String VERSION = "1.0.1 (zur Demonstration)";
-    public static final int BUILD = 16;
+    public static final String VERSION = "1.0.1";
+    public static final int BUILD = 17;
 
     private static Wochenplan wochenplan = new Wochenplan();
     private static WPUI ui;
@@ -62,7 +62,6 @@ public class WPAPP {
                 EventQueue.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-
                         ui = new WPUI();
                     }
                 });

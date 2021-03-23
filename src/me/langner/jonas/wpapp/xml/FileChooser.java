@@ -1,8 +1,7 @@
 package me.langner.jonas.wpapp.xml;
 
-import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.exception.IllegalFileExtensionException;
-import me.langner.jonas.wpapp.objects.ui.ErrorUI;
+import me.langner.jonas.wpapp.objects.ui.frames.ErrorUI;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -29,8 +28,7 @@ public class FileChooser {
             try {
                 this.file = open();
             } catch (FileNotFoundException e) {
-                if (WPAPP.getUI() != null && WPAPP.getUI().isVisible())
-                    break;
+                break;
             } catch (IllegalFileExtensionException e) {
                 new ErrorUI("Sie haben eine falsche Datei gewählt", e);
             }

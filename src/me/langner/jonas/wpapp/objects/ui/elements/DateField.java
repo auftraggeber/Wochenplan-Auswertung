@@ -1,4 +1,4 @@
-package me.langner.jonas.wpapp.objects.ui;
+package me.langner.jonas.wpapp.objects.ui.elements;
 
 import me.langner.jonas.wpapp.WPAPP;
 
@@ -71,15 +71,36 @@ public class DateField extends JFormattedTextField {
         super(WPAPP.DISPLAY_FORMAT);
         this.dateType = dateType;
 
-        /* ermitteln, welches Datum */
-        if (dateType.equals(DateType.START))
-
-            setText(WPAPP.DISPLAY_FORMAT.format(getFirstDayOfMonth(LocalDate.now().getMonth(),1)));
-        else
-            setText(WPAPP.DISPLAY_FORMAT.format(getLastDayOfMonth(LocalDate.now().getMonth(),1)));
-
+        setDefaultDate();
 
         addListener();
+    }
+
+    /**
+     * Setzt das Standarddatum.
+     */
+    public void setDefaultDate() {
+        /* ermitteln, welches Datum */
+        if (dateType.equals(DateType.START)) {
+            String start = WPAPP.DISPLAY_FORMAT.format(getFirstDayOfMonth(LocalDate.now().getMonth(),1));
+
+            /* überprüfen, ob es vielleicht schon ein Datum gibt */
+            if (WPAPP.getWochenplan().getPeriod() != null && WPAPP.getWochenplan().getPeriod().getStart() != null)
+                // gibt schon ein Datum -> überschreiben
+                start = WPAPP.DISPLAY_FORMAT.format(WPAPP.getWochenplan().getPeriod().getStart());
+
+            setText(start);
+        }
+        else {
+            String end = WPAPP.DISPLAY_FORMAT.format(getLastDayOfMonth(LocalDate.now().getMonth(),1));
+
+            /* überprüfen, ob es vielleicht schon ein Datum gibt */
+            if (WPAPP.getWochenplan().getPeriod() != null && WPAPP.getWochenplan().getPeriod().getEnd() != null)
+                // gibt schon ein Datum -> überschreiben
+                end = WPAPP.DISPLAY_FORMAT.format(WPAPP.getWochenplan().getPeriod().getEnd());
+
+            setText(end);
+        }
     }
 
     /**
@@ -126,6 +147,33 @@ public class DateField extends JFormattedTextField {
 
             @Override
             public void focusLost(FocusEvent e) {
+
+            }
+        });
+
+        addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                selectAll();
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                selectAll();
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
 
             }
         });

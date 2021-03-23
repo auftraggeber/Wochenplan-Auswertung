@@ -6,7 +6,7 @@ import me.langner.jonas.wpapp.objects.exception.MissingArgumentException;
 import me.langner.jonas.wpapp.objects.factory.Machine;
 import me.langner.jonas.wpapp.objects.factory.Tool;
 import me.langner.jonas.wpapp.objects.time.Period;
-import me.langner.jonas.wpapp.objects.ui.ErrorUI;
+import me.langner.jonas.wpapp.objects.ui.frames.ErrorUI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -118,7 +118,7 @@ public class WochenplanFileReader {
 
                     /* ZeitPeriode speichern */
                     Period period = new Period(startDate, endDate);
-                    WPAPP.getWochenplan().setPeriod(period);
+                    WPAPP.getWochenplan().setXMLPeriod(period);
                 } catch (ParseException e) {
                     new ErrorUI("Konnte Daten nicht korrekt lesen. Die Datei ist möglicherweise beschädigt.", e);
                 }

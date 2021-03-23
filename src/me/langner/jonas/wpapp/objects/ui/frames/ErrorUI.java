@@ -1,4 +1,4 @@
-package me.langner.jonas.wpapp.objects.ui;
+package me.langner.jonas.wpapp.objects.ui.frames;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,6 +28,8 @@ public class ErrorUI extends Frame {
     public ErrorUI(String message, Exception exception, String ... addition) {
         super("Fehler: " + exception.getClass().getName(), 500, 200);
 
+        getPanel().setBackground(Color.WHITE);
+
         /* größe wirklich anpassen */
         setMinHeight(270);
         setSize(500,270);
@@ -38,7 +40,7 @@ public class ErrorUI extends Frame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setState(JFrame.ERROR);
 
-        message += "<br/><br/>Das Programm meldet: <br/><i>\"" + exception.getMessage() + "";
+        message += "<br/><br/><strong>Das Programm meldet:</strong><br/><i>\"" + exception.getMessage() + "";
 
         for (String add : addition) {
             message += "<br/>" + add;
@@ -60,7 +62,7 @@ public class ErrorUI extends Frame {
         messageLabel.setFont(messageLabel.getFont().deriveFont(13f));
 
         /* Mail-Link hinzufügen */
-        link.setBounds(0,210, getWidth(), 40);
+        link.setBounds(100,210, getWidth() - 200, 40);
         link.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         /* beim klicken link öffnen */

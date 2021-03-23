@@ -1,4 +1,4 @@
-package me.langner.jonas.wpapp.objects.ui;
+package me.langner.jonas.wpapp.objects.ui.frames;
 
 import me.langner.jonas.wpapp.WPAPP;
 

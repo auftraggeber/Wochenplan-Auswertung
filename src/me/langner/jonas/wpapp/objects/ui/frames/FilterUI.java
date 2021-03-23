@@ -1,14 +1,17 @@
-package me.langner.jonas.wpapp.objects.ui;
+package me.langner.jonas.wpapp.objects.ui.frames;
 
 import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.time.Period;
 import me.langner.jonas.wpapp.objects.time.SelectionMonth;
+import me.langner.jonas.wpapp.objects.ui.elements.DateField;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.InputMismatchException;
 
 /**
  * Ist das FilterUI.
@@ -27,7 +30,9 @@ public class FilterUI extends Frame {
     private JComboBox<SelectionMonth> select = new JComboBox<>(SelectionMonth.values());
     private DateField[] dateFields = new DateField[2];
 
-    private JButton saveButton = new JButton("Speichern");
+    private JButton
+            saveButton = new JButton("Speichern"),
+            resetButton = new JButton("Zurücksetzten");
 
     private JPanel
             selectPanel = new JPanel(),
@@ -72,7 +77,8 @@ public class FilterUI extends Frame {
         addToPanel(
                 selectPanel,
                 datePanel,
-                saveButton
+                saveButton,
+                resetButton
         );
 
         reload();
@@ -109,14 +115,37 @@ public class FilterUI extends Frame {
                     Date start = WPAPP.DISPLAY_FORMAT.parse(dateFields[0].getText());
                     Date end = WPAPP.DISPLAY_FORMAT.parse(dateFields[1].getText());
 
+                    /* überprüfen, ob Sinnvolle Eingabe */
+                    if (end.before(start) && ! end.equals(start)) {
+                        // keinen Sinn -> ausgeben und anpassen
+                        new ErrorUI(
+                                "Fehlerhafte Eingabe! Die eingegebenen Daten ergaben keinen Sinn. Enddatum wurde angepasst!",
+                                new IllegalArgumentException("start date is after end date")
+                        );
+
+                        end = start;
+                    }
+
                     WPAPP.getWochenplan().setPeriod(new Period(start,end));
                     WPAPP.getUI().reloadInformation();
 
                     setVisible(false);
+
+
                 } catch (ParseException parseException) {
                     parseException.printStackTrace();
                 }
 
+            }
+        });
+
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dateFields[0].setDefaultDate();
+                dateFields[1].setDefaultDate();
+
+                select.setSelectedIndex(0);
             }
         });
     }
@@ -140,7 +169,8 @@ public class FilterUI extends Frame {
 
         dateTitle.setBounds(0,0, datePanel.getWidth(), 30);
 
-        saveButton.setBounds(200,215,getWidth()-400,50);
+        saveButton.setBounds(100,215,getWidth()/2 - 110,50);
+        resetButton.setBounds(getWidth()/2 + 10, 215, saveButton.getWidth(), 50);
     }
 
     @Override
