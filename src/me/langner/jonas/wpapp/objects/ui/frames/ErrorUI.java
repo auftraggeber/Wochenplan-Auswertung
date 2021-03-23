@@ -11,6 +11,12 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Verwaltet die Darstellung von Fehlern.
+ * @author Jonas Langner
+ * @version 1.0
+ * @since 1.0.1
+ */
 public class ErrorUI extends Frame {
 
     private JLabel messageLabel;

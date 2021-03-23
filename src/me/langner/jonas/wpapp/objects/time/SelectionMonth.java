@@ -2,6 +2,12 @@ package me.langner.jonas.wpapp.objects.time;
 
 import java.time.Month;
 
+/**
+ * Beinhaltet alle Monate für das select-Feld und deren Informationen.
+ * @author Jonas Langner
+ * @version 1.0
+ * @since 1.0.1
+ */
 public enum SelectionMonth {
 
     NONE("Keinen", -1,null),

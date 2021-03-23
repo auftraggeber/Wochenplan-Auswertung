@@ -1,6 +1,7 @@
 package me.langner.jonas.wpapp.objects.ui.elements;
 
 import me.langner.jonas.wpapp.WPAPP;
+import me.langner.jonas.wpapp.objects.time.Period;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -71,21 +72,25 @@ public class DateField extends JFormattedTextField {
         super(WPAPP.DISPLAY_FORMAT);
         this.dateType = dateType;
 
-        setDefaultDate();
+        setDefaultDate(false);
 
         addListener();
     }
 
     /**
      * Setzt das Standarddatum.
+     * @param xml Gibt an, ob die Zeitspanne aus den Dateien verwendet werden soll.
      */
-    public void setDefaultDate() {
+    public void setDefaultDate(boolean xml) {
+        /* Zeit auslesen */
+        Period period = (xml) ? WPAPP.getWochenplan().getXMLPeriod() : WPAPP.getWochenplan().getPeriod();
+
         /* ermitteln, welches Datum */
         if (dateType.equals(DateType.START)) {
             String start = WPAPP.DISPLAY_FORMAT.format(getFirstDayOfMonth(LocalDate.now().getMonth(),1));
 
             /* überprüfen, ob es vielleicht schon ein Datum gibt */
-            if (WPAPP.getWochenplan().getPeriod() != null && WPAPP.getWochenplan().getPeriod().getStart() != null)
+            if (period != null && period.getStart() != null)
                 // gibt schon ein Datum -> überschreiben
                 start = WPAPP.DISPLAY_FORMAT.format(WPAPP.getWochenplan().getPeriod().getStart());
 
@@ -95,7 +100,7 @@ public class DateField extends JFormattedTextField {
             String end = WPAPP.DISPLAY_FORMAT.format(getLastDayOfMonth(LocalDate.now().getMonth(),1));
 
             /* überprüfen, ob es vielleicht schon ein Datum gibt */
-            if (WPAPP.getWochenplan().getPeriod() != null && WPAPP.getWochenplan().getPeriod().getEnd() != null)
+            if (period != null && period.getEnd() != null)
                 // gibt schon ein Datum -> überschreiben
                 end = WPAPP.DISPLAY_FORMAT.format(WPAPP.getWochenplan().getPeriod().getEnd());
 

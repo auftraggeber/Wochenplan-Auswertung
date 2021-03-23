@@ -8,11 +8,21 @@ import java.awt.event.ComponentEvent;
 import java.io.FileNotFoundException;
 import java.net.URL;
 
+/**
+ * Verwaltet den Startbildschirm des Programms.
+ * @author Jonas Langner
+ * @version 1.0
+ * @since 1.0.1
+ */
 public class StartUI extends Frame {
 
     private JLabel label;
     private static final JLabel VERSION_LABEL = new JLabel("Version " + WPAPP.VERSION + " Build " + WPAPP.BUILD);
 
+    /**
+     * Erstellt einen neuen Startbildschirm.
+     * @throws FileNotFoundException Wird geworfen, wenn das Logo nicht verfügbar ist.
+     */
     public StartUI() throws FileNotFoundException {
         super("", 500,300);
 
@@ -42,8 +52,6 @@ public class StartUI extends Frame {
             }
         }
         else throw new FileNotFoundException();
-
-
     }
 
 

@@ -142,8 +142,8 @@ public class FilterUI extends Frame {
         resetButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dateFields[0].setDefaultDate();
-                dateFields[1].setDefaultDate();
+                dateFields[0].setDefaultDate(true);
+                dateFields[1].setDefaultDate(true);
 
                 select.setSelectedIndex(0);
             }
