@@ -1,14 +1,13 @@
 package me.langner.jonas.wpapp.xml;
 
 import me.langner.jonas.wpapp.WPAPP;
-import me.langner.jonas.wpapp.objects.IllegalFileExtensionException;
-import me.langner.jonas.wpapp.ui.ErrorUI;
+import me.langner.jonas.wpapp.objects.exception.IllegalFileExtensionException;
+import me.langner.jonas.wpapp.objects.ui.ErrorUI;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.IllegalFormatException;
 
 /**
  * Wählt eine Datei aus.

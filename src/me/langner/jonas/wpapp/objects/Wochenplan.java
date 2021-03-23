@@ -1,6 +1,9 @@
 package me.langner.jonas.wpapp.objects;
 
-import me.langner.jonas.wpapp.listener.FactoryChangeListener;
+import me.langner.jonas.wpapp.objects.listener.FactoryChangeListener;
+import me.langner.jonas.wpapp.objects.factory.Machine;
+import me.langner.jonas.wpapp.objects.factory.Tool;
+import me.langner.jonas.wpapp.objects.time.Period;
 
 import java.util.*;
 

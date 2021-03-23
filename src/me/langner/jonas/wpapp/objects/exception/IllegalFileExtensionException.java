@@ -1,4 +1,4 @@
-package me.langner.jonas.wpapp.objects;
+package me.langner.jonas.wpapp.objects.exception;
 
 /**
  * Wird aufgerufen, wenn eine falsche Datei gewählt wurde.

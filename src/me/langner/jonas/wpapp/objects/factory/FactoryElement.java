@@ -1,6 +1,7 @@
-package me.langner.jonas.wpapp.objects;
+package me.langner.jonas.wpapp.objects.factory;
 
 import me.langner.jonas.wpapp.WPAPP;
+import me.langner.jonas.wpapp.objects.StaffEntry;
 
 import java.util.Collections;
 import java.util.HashSet;

@@ -1,14 +1,12 @@
-package me.langner.jonas.wpapp.ui;
+package me.langner.jonas.wpapp.objects.ui;
 
 import me.langner.jonas.wpapp.WPAPP;
-import me.langner.jonas.wpapp.objects.DateField;
-import me.langner.jonas.wpapp.objects.Period;
-import me.langner.jonas.wpapp.objects.SelectionMonth;
+import me.langner.jonas.wpapp.objects.time.Period;
+import me.langner.jonas.wpapp.objects.time.SelectionMonth;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.peer.WindowPeer;
 import java.text.ParseException;
 import java.util.Date;
 
@@ -20,12 +18,20 @@ import java.util.Date;
  */
 public class FilterUI extends Frame {
 
-    private JLabel title = new JLabel("Wählen Sie einen Monat aus", JLabel.CENTER);
+    private JLabel
+            selectTitle = new JLabel("Wählen Sie einen Monat aus", JLabel.CENTER),
+            dateTitle = new JLabel("Geben Sie einen Zeitraum ein", JLabel.CENTER),
+            dateFrom = new JLabel("Von: "),
+            dateTo = new JLabel("Bis: ");
 
     private JComboBox<SelectionMonth> select = new JComboBox<>(SelectionMonth.values());
     private DateField[] dateFields = new DateField[2];
 
     private JButton saveButton = new JButton("Speichern");
+
+    private JPanel
+            selectPanel = new JPanel(),
+            datePanel = new JPanel();
 
     /**
      * Erstellt ein neues Fenster.
@@ -35,17 +41,37 @@ public class FilterUI extends Frame {
 
         setResizable(false);
 
-        title.setFont(title.getFont().deriveFont(Font.BOLD));
+        selectTitle.setFont(selectTitle.getFont().deriveFont(Font.BOLD));
+        dateTitle.setFont(selectTitle.getFont());
 
-        createFields();
+        selectPanel.setBackground(Color.WHITE);
+        selectPanel.setLayout(null);
+
+        datePanel.setBackground(Color.WHITE);
+        datePanel.setLayout(null);
+
+        dateFields[0] = new DateField(DateField.DateType.START);
+        dateFields[1] = new DateField(DateField.DateType.END);
+
+        dateFields[0].setBackground(new Color(230,230,230));
+        dateFields[1].setBackground(dateFields[0].getBackground());
+
         setBounds();
         addListeners();
 
+        selectPanel.add(selectTitle);
+        selectPanel.add(select);
+
+        datePanel.add(dateTitle);
+        datePanel.add(dateFields[0]);
+        datePanel.add(dateFields[1]);
+        datePanel.add(dateFrom);
+        datePanel.add(dateTo);
+
+
         addToPanel(
-                title,
-                select,
-                dateFields[0],
-                dateFields[1],
+                selectPanel,
+                datePanel,
                 saveButton
         );
 
@@ -96,25 +122,25 @@ public class FilterUI extends Frame {
     }
 
     /**
-     * Erstellt die Datumsfelder.
-     */
-    private void createFields() {
-        dateFields[0] = new DateField(DateField.DateType.START);
-        dateFields[1] = new DateField(DateField.DateType.END);
-    }
-
-    /**
      * Setzt die Koordinaten der Objekte
      */
     private void setBounds() {
-        title.setBounds(0,0, getWidth(), 30);
+        selectPanel.setBounds(10,10,getWidth()-20,75);
+        datePanel.setBounds(10,95,getWidth()-20,113);
 
-        select.setBounds(0,60,getWidth(),40);
+        selectTitle.setBounds(0,0, selectPanel.getWidth(), 30);
 
-        dateFields[0].setBounds(50,100,getWidth()-100, 40);
-        dateFields[1].setBounds(50,150,getWidth()-100, 40);
+        select.setBounds(50,30,selectPanel.getWidth() - 100,25);
 
-        saveButton.setBounds(100,230,getWidth()-200,20);
+        dateFields[0].setBounds(150,30,datePanel.getWidth()-300, 23);
+        dateFields[1].setBounds(150,70,datePanel.getWidth()-300, 23);
+
+        dateFrom.setBounds(100,30,50,23);
+        dateTo.setBounds(100,70,50,23);
+
+        dateTitle.setBounds(0,0, datePanel.getWidth(), 30);
+
+        saveButton.setBounds(200,215,getWidth()-400,50);
     }
 
     @Override

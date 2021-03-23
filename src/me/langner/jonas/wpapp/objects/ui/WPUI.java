@@ -1,10 +1,10 @@
-package me.langner.jonas.wpapp.ui;
+package me.langner.jonas.wpapp.objects.ui;
 
 import me.langner.jonas.wpapp.WPAPP;
-import me.langner.jonas.wpapp.listener.FactoryChangeListener;
-import me.langner.jonas.wpapp.objects.Machine;
+import me.langner.jonas.wpapp.objects.listener.FactoryChangeListener;
+import me.langner.jonas.wpapp.objects.factory.Machine;
 import me.langner.jonas.wpapp.objects.StaffEntry;
-import me.langner.jonas.wpapp.objects.Tool;
+import me.langner.jonas.wpapp.objects.factory.Tool;
 import me.langner.jonas.wpapp.objects.Wochenplan;
 import me.langner.jonas.wpapp.xml.WochenplanFileReader;
 
@@ -76,7 +76,7 @@ public class WPUI extends Frame {
     private Runnable reloadRunnable;
 
     public WPUI() {
-        super("WPAPP Auswertung Version 1.0.1", 1500, 1300);
+        super("WPAPP Auswertung - Version " + WPAPP.VERSION, 1500, 1300);
 
         setMinWidth(1100);
 
@@ -140,10 +140,15 @@ public class WPUI extends Frame {
         reload();
     }
 
+    /**
+     * Öffnet das Fenster.
+     */
     @Override
     public void open() {
         super.open();
-        WPAPP.getStartUI().setVisible(false);
+
+        if (WPAPP.getStartUI() != null)
+            WPAPP.getStartUI().setVisible(false);
     }
 
     /**

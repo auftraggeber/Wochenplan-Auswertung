@@ -1,19 +1,17 @@
-package me.langner.jonas.wpapp.ui;
+package me.langner.jonas.wpapp.objects.ui;
+
+import me.langner.jonas.wpapp.WPAPP;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.io.FileNotFoundException;
 import java.net.URL;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class StartUI extends Frame {
 
     private JLabel label;
-    private static final JLabel VERSION_LABEL = new JLabel("Version 1.0.1   Build 15");
+    private static final JLabel VERSION_LABEL = new JLabel("Version " + WPAPP.VERSION + " Build " + WPAPP.BUILD);
 
     public StartUI() throws FileNotFoundException {
         super("", 500,300);

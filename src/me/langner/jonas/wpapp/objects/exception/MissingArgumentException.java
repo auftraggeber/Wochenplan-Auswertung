@@ -1,4 +1,4 @@
-package me.langner.jonas.wpapp.objects;
+package me.langner.jonas.wpapp.objects.exception;
 
 /**
  * Wird aufgerufen, wenn ein Parser zu wenig Argumente hat, um ein Objekt zu erstellen.

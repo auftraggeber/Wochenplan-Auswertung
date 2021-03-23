@@ -1,4 +1,4 @@
-package me.langner.jonas.wpapp.objects;
+package me.langner.jonas.wpapp.objects.time;
 
 import me.langner.jonas.wpapp.WPAPP;
 
