@@ -6,13 +6,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.naming.InvalidNameException;
 import javax.print.Doc;
 import java.io.File;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.MissingResourceException;
 
 /**
  * Liest die Waochenplan-Datei nach der Syntax und erstellt Java-Objekte.
@@ -116,9 +119,9 @@ public class WochenplanFileReader {
                     /* ZeitPeriode speichern */
                     Period period = new Period(startDate, endDate);
                     WPAPP.getWochenplan().setPeriod(period);
-                }
-                catch (Exception ex) {
-                    ex.printStackTrace();
+                } catch (ParseException e) {
+
+                    // TODO: sinnvolle Fehlermeldung
                 }
 
             }
@@ -145,10 +148,17 @@ public class WochenplanFileReader {
                 /* wenn es wirklich eine Maschine ist -> dann Daten lesen */
                 if (machineNode.getNodeName().equalsIgnoreCase("machine")) {
                     // wirklich Maschine
-                    Machine machine = createMachine(machineNode);
+                    try {
+                        Machine machine = createMachine(machineNode);
 
-                    /* Maschine und dessen Werkzeuge hinzufügen */
-                    WPAPP.getWochenplan().addMachine(machine);
+                        /* Maschine und dessen Werkzeuge hinzufügen */
+                        WPAPP.getWochenplan().addMachine(machine);
+                    }
+                    catch(MissingArgumentException ex) {
+                        if (ex.getMessage() != null)
+                            System.err.println(ex.getMessage() + "\n" + ex.getArgumentString());
+                    }
+
                 }
 
             }
@@ -285,7 +295,7 @@ public class WochenplanFileReader {
      * @param machineNode Die XML-Node mit den Daten der Maschine.
      * @return Die erstellte Maschine.
      */
-    private Machine createMachine(Node machineNode) {
+    private Machine createMachine(Node machineNode) throws MissingArgumentException {
 
         int machineID = -1;
         String machineName = null;
@@ -315,16 +325,21 @@ public class WochenplanFileReader {
                         break;
                     case "tool":
                         // es handelt sich um ein verknüpftes werkzeug -> erstellen
-                        Tool tool = createTool(child);
+                        try {
+                            Tool tool = createTool(child);
 
-                        /* zu liste hinzufügen, wenn nicht null und nicht schon teil */
-                        if (tool != null && !toolList.contains(tool))
-                            toolList.add(tool);
+                            /* zu liste hinzufügen, wenn nicht null und nicht schon teil */
+                            if (tool != null && !toolList.contains(tool))
+                                toolList.add(tool);
+                        }
+                        catch(MissingArgumentException ex) {
+                            if (ex.getMessage() != null)
+                                System.err.println(ex.getMessage() + "\n" + ex.getArgumentString());
+                        }
 
                         break;
                     default:
-                        System.err.println("Fehler unbekannter Tag (keine Interpretation: " + child.getNodeName() + ")!");
-                        break;
+                        System.err.println("Unknown Tag found: " + child.getNodeName());
 
                 }
             }
@@ -340,8 +355,11 @@ public class WochenplanFileReader {
 
             return machine;
         }
+        else throw new MissingArgumentException(
+                "Cannot create machine due to missing arguments.",
+                new Object[][]{new Object[] {"machineID", machineID}, new Object[] {"machineName", machineName}}
+                );
 
-        return null;
     }
 
     /**
@@ -349,7 +367,7 @@ public class WochenplanFileReader {
      * @param toolNode Die XML-Node mit den Infos des Werkzeugs.
      * @return Das erstellte Werkzeug.
      */
-    private Tool createTool(Node toolNode) {
+    private Tool createTool(Node toolNode) throws MissingArgumentException {
 
         int toolID = -1;
         String toolName = null;
@@ -387,20 +405,25 @@ public class WochenplanFileReader {
                         }
                         break;
                     default:
-                        System.err.println("Fehler unbekannter Tag (keine Interpretation: " + child.getNodeName() + ")!");
-                        break;
+                        System.err.println("Unknown Tag found: " + child.getNodeName());
 
                 }
             }
         }
 
         /* überprüfen, ob Machine erstellt werden kann */
-        if (toolID > 0 && toolName != null && preparationTime > 0) {
+        if (toolID > 0 && toolName != null && preparationTime >= 0) {
             // kann erstellt werden -> erstellen & ausgeben
             return new Tool(toolID, toolName, preparationTime);
         }
-
-        return null;
+        else throw new MissingArgumentException(
+                "Cannot create tool due to missing arguments.",
+                new Object[][] {
+                        new Object[] {"toolID", toolID},
+                        new Object[] {"toolName", toolName},
+                        new Object[] {"preparationTime", preparationTime}
+                }
+                );
     }
 
 }

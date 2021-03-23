@@ -1,8 +1,12 @@
 package me.langner.jonas.wpapp.xml;
 
+import me.langner.jonas.wpapp.objects.IllegalFileExtensionException;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.IllegalFormatException;
 
 /**
  * Wählt eine Datei aus.
@@ -19,7 +23,17 @@ public class FileChooser {
         jFileChooser = new JFileChooser(System.getProperty("user.home") + "/Desktop");
 
         addFilter();
-        open();
+
+        while (this.file == null) {
+            try {
+                this.file = open();
+            } catch (FileNotFoundException e) {
+                // TODO: sinnvolle Fehlermeldung
+            } catch (IllegalFileExtensionException e) {
+                // TODO: sinnvolle Fehlermeldung
+            }
+        }
+
     }
 
     /**
@@ -33,7 +47,7 @@ public class FileChooser {
     /**
      * Öffnet die Dateiauswahl.
      */
-    private void open() {
+    private File open() throws FileNotFoundException, IllegalFileExtensionException {
 
         int result = jFileChooser.showOpenDialog(null);
 
@@ -43,15 +57,20 @@ public class FileChooser {
             File file = jFileChooser.getSelectedFile();
 
             /* überprüfen, ob richtiges Format */
-            if (file.getAbsolutePath().endsWith(".wpapp")) {
+            if (file != null && file.getAbsolutePath().endsWith(".wpapp")) {
                 // richtiges Format
 
-                this.file = file;
+                return file;
             }
             else {
-                // TODO: sinnvoller Abbruch
+                if (file == null)
+                    throw new FileNotFoundException("The filechooser returned no file.");
+                else
+                    throw new IllegalFileExtensionException("The chosen file has not the extension .wpapp", "wpapp");
+
             }
         }
+        else throw new FileNotFoundException("The chooser was canceled.");
     }
 
     public File getFile() {

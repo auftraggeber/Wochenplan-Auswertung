@@ -73,8 +73,10 @@ public class StartUI extends Frame {
     private MenuItem menuItem = new MenuItem("Zurücksetzen");
     private MenuItem menuItemMonthSelect = new MenuItem("Monat wählen");
 
+    private Runnable reloadRunnable;
+
     public StartUI() {
-        super("WPAPP Auswertung", 1500, 1300);
+        super("WPAPP Auswertung Version 1.0.1", 1500, 1300);
 
         setMinWidth(1100);
 
@@ -336,9 +338,16 @@ public class StartUI extends Frame {
             autoChanged = false;
         }
 
-
         /* updaten */
         showInformation(entries);
+
+        /* für reload festlegen */
+        reloadRunnable = new Runnable() {
+            @Override
+            public void run() {
+                machineSelectionChanged();
+            }
+        };
     }
 
     /**
@@ -360,6 +369,14 @@ public class StartUI extends Frame {
 
         /* updaten */
         showInformation(entries);
+
+        /* für reload festlegen */
+        reloadRunnable = new Runnable() {
+            @Override
+            public void run() {
+                toolSelectionChanged();
+            }
+        };
     }
 
     /**
@@ -421,7 +438,8 @@ public class StartUI extends Frame {
      * Lädt die Informationen neu.
      */
     public void reloadInformation() {
-        showInformation(lastEntries);
+        if (reloadRunnable != null)
+            reloadRunnable.run();
     }
 
     /**

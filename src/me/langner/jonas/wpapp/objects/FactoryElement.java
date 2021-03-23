@@ -73,8 +73,13 @@ public abstract class FactoryElement {
 
         for (StaffEntry entry : entries) {
             /* ermitteln, ob im Rahmen */
-            if (entry.getDate().after(WPAPP.getWochenplan().getPeriod().getStart()) &&
-                    entry.getDate().before(WPAPP.getWochenplan().getPeriod().getEnd()))
+            if ((
+                    entry.getDate().before(WPAPP.getWochenplan().getPeriod().getEnd()) &&
+                            entry.getDate().after(WPAPP.getWochenplan().getPeriod().getStart())
+            ) || (
+                    entry.getDate().equals(WPAPP.getWochenplan().getPeriod().getStart()) ||
+                            entry.getDate().equals(WPAPP.getWochenplan().getPeriod().getEnd())
+            ))
                 filteredEntries.add(entry);
         }
 
