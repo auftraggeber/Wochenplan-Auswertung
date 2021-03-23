@@ -18,7 +18,7 @@ import java.util.Date;
  * @version 1.0
  * @since 1.0.1
  */
-public class MonthUI extends Frame {
+public class FilterUI extends Frame {
 
     private JLabel title = new JLabel("Wählen Sie einen Monat aus", JLabel.CENTER);
 
@@ -27,8 +27,11 @@ public class MonthUI extends Frame {
 
     private JButton saveButton = new JButton("Speichern");
 
-    public MonthUI() {
-        super("Monat wählen", 600, 200);
+    /**
+     * Erstellt ein neues Fenster.
+     */
+    public FilterUI() {
+        super("Filter", 600, 200);
 
         setResizable(false);
 
@@ -48,7 +51,7 @@ public class MonthUI extends Frame {
 
         reload();
         setVisible(true);
-
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setAlwaysOnTop(true);
     }
 
@@ -82,6 +85,8 @@ public class MonthUI extends Frame {
 
                     WPAPP.getWochenplan().setPeriod(new Period(start,end));
                     WPAPP.getUI().reloadInformation();
+
+                    setVisible(false);
                 } catch (ParseException parseException) {
                     parseException.printStackTrace();
                 }

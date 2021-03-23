@@ -1,6 +1,7 @@
 package me.langner.jonas.wpapp;
 
 import me.langner.jonas.wpapp.objects.*;
+import me.langner.jonas.wpapp.ui.ErrorUI;
 import me.langner.jonas.wpapp.ui.StartUI;
 import java.awt.*;
 import java.text.SimpleDateFormat;
@@ -23,7 +24,13 @@ public class WPAPP {
     private static Wochenplan wochenplan = new Wochenplan();
     private static StartUI ui;
 
-    public static String getShiftName(int i) {
+    /**
+     * Wandelt einen Integer in ein Schichtkürzel um.
+     * @param i Der gefundene Wert.
+     * @return Die ermittelte Schicht.
+     * @throws IllegalStateException Wird geworfen, wenn falscher Wert angegeben wird.
+     */
+    public static String getShiftName(int i) throws IllegalStateException {
         switch (i) {
             case 0:
                 return "FS";
@@ -32,7 +39,7 @@ public class WPAPP {
             case 2:
                 return "NS";
             default:
-                return "--";
+                throw new IllegalStateException("The integer has to be 0,1 or 2. Got: " + i);
         }
     }
 

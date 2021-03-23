@@ -3,8 +3,7 @@ package me.langner.jonas.wpapp.objects;
 import me.langner.jonas.wpapp.WPAPP;
 
 import javax.swing.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Month;
@@ -110,6 +109,7 @@ public class DateField extends JFormattedTextField {
                 /* entfernen soll keine Punkte verursachen */
                 if (e.getKeyCode() != 8 && e.getKeyCode() != 127)
                     checkDot();
+                else setText("");
 
                 /* Punkt soll automatisch gesetzt werden */
                 if (e.getKeyCode() == 46) {
@@ -121,6 +121,18 @@ public class DateField extends JFormattedTextField {
         };
 
         addKeyListener(listener);
+
+        addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                selectAll();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+
+            }
+        });
     }
 
     /**

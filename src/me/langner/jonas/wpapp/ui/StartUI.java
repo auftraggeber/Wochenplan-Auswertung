@@ -162,7 +162,7 @@ public class StartUI extends Frame {
         menuItemMonthSelect.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new MonthUI();
+                new FilterUI();
             }
         });
     }
@@ -503,14 +503,20 @@ public class StartUI extends Frame {
             StaffEntry entry = entries.get(i);
 
             /* Reihe erstellen */
-            rows[i] = new Object[] {
-                    WPAPP.DISPLAY_FORMAT.format(entry.getDate()),
-                    WPAPP.getShiftName(entry.getShift()),
-                    entry.getMachine().getName(),
-                    entry.getTool().getName(),
-                    entry.getValue(),
-                    getPreparationDisplay(entry)
-            };
+            try {
+                rows[i] = new Object[] {
+                        WPAPP.DISPLAY_FORMAT.format(entry.getDate()),
+                        WPAPP.getShiftName(entry.getShift()),
+                        entry.getMachine().getName(),
+                        entry.getTool().getName(),
+                        entry.getValue(),
+                        getPreparationDisplay(entry)
+                };
+            }
+            catch (IllegalStateException ex) {
+                new ErrorUI("Interner Fehler", ex);
+            }
+
         }
 
         /* Daten zurücksetzen */

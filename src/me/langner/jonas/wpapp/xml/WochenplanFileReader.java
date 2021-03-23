@@ -2,6 +2,7 @@ package me.langner.jonas.wpapp.xml;
 
 import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.*;
+import me.langner.jonas.wpapp.ui.ErrorUI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -9,6 +10,7 @@ import org.w3c.dom.NodeList;
 import javax.naming.InvalidNameException;
 import javax.print.Doc;
 import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -120,8 +122,7 @@ public class WochenplanFileReader {
                     Period period = new Period(startDate, endDate);
                     WPAPP.getWochenplan().setPeriod(period);
                 } catch (ParseException e) {
-
-                    // TODO: sinnvolle Fehlermeldung
+                    new ErrorUI("Konnte Daten nicht korrekt lesen. Die Datei ist möglicherweise beschädigt.", e);
                 }
 
             }
@@ -155,8 +156,8 @@ public class WochenplanFileReader {
                         WPAPP.getWochenplan().addMachine(machine);
                     }
                     catch(MissingArgumentException ex) {
-                        if (ex.getMessage() != null)
-                            System.err.println(ex.getMessage() + "\n" + ex.getArgumentString());
+                        String extra = (ex.getArgumentString() != null) ? ex.getArgumentString() : "";
+                        new ErrorUI("Eine Maschine konnte nicht geladen werden", ex, extra);
                     }
 
                 }
@@ -294,6 +295,7 @@ public class WochenplanFileReader {
      * Liest Daten und erstellt eine Maschine.
      * @param machineNode Die XML-Node mit den Daten der Maschine.
      * @return Die erstellte Maschine.
+     * @throws MissingArgumentException Wirf den Fehler, wenn es zu wenig zum Interpretieren gab.
      */
     private Machine createMachine(Node machineNode) throws MissingArgumentException {
 
@@ -333,8 +335,8 @@ public class WochenplanFileReader {
                                 toolList.add(tool);
                         }
                         catch(MissingArgumentException ex) {
-                            if (ex.getMessage() != null)
-                                System.err.println(ex.getMessage() + "\n" + ex.getArgumentString());
+                            String extra = (ex.getArgumentString() != null) ? ex.getArgumentString() : "";
+                            new ErrorUI("Ein Werkzeug konnte nicht geladen werden", ex, extra);
                         }
 
                         break;
@@ -366,6 +368,7 @@ public class WochenplanFileReader {
      * Liest Informationen eines Tool und erstellt ein Objekt.
      * @param toolNode Die XML-Node mit den Infos des Werkzeugs.
      * @return Das erstellte Werkzeug.
+     * @throws MissingArgumentException Wirf den Fehler, wenn es zu wenig zum Interpretieren gab.
      */
     private Tool createTool(Node toolNode) throws MissingArgumentException {
 
