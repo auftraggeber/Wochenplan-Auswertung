@@ -58,6 +58,7 @@ public abstract class FactoryElement {
     public void addEntry(StaffEntry entry) {
         if (!entries.contains(entry))
             entries.add(entry);
+        else System.err.println("Found duplicate.");
     }
 
     /**

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Wochenplan Auswertung:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Wochenplan_Auswertung_jar</output-path>
+    <root id="archive" name="Wochenplan Auswertung.jar">
+      <element id="module-output" name="Wochenplan Auswertung" />
+    </root>
+  </artifact>
+</component>
