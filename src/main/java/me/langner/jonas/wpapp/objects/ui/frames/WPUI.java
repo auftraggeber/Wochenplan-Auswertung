@@ -1,10 +1,10 @@
-package me.langner.jonas.wpapp.ui;
+package me.langner.jonas.wpapp.objects.ui.frames;
 
 import me.langner.jonas.wpapp.WPAPP;
-import me.langner.jonas.wpapp.listener.FactoryChangeListener;
-import me.langner.jonas.wpapp.objects.Machine;
+import me.langner.jonas.wpapp.objects.listener.FactoryChangeListener;
+import me.langner.jonas.wpapp.objects.factory.Machine;
 import me.langner.jonas.wpapp.objects.StaffEntry;
-import me.langner.jonas.wpapp.objects.Tool;
+import me.langner.jonas.wpapp.objects.factory.Tool;
 import me.langner.jonas.wpapp.objects.Wochenplan;
 import me.langner.jonas.wpapp.xml.WochenplanFileReader;
 
@@ -12,20 +12,24 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
 import java.util.TimerTask;
 
-public class StartUI extends Frame {
+/**
+ * Ist das HauptUI.
+ * @author Jonas Langner
+ * @version 1.0.1
+ * @since Alpha
+ */
+public class WPUI extends Frame {
 
     private String[] tableHeaders = new String[]{
             "Datum",
@@ -59,7 +63,7 @@ public class StartUI extends Frame {
     private JScrollPane tableScrollPane = new JScrollPane(table);
     private JPanel tablePanel = new JPanel();
 
-    private JCheckBox onlyWorking = new JCheckBox("Nullwerte ausblenden");
+    private JCheckBox onlyWithData = new JCheckBox("Nullwerte ausblenden");
 
     private JButton moreData = new JButton("Weitere Datei einbinden");
 
@@ -68,9 +72,12 @@ public class StartUI extends Frame {
 
     private Menu menu = new Menu("Aktionen");
     private MenuItem menuItem = new MenuItem("Zurücksetzen");
+    private MenuItem menuItemMonthSelect = new MenuItem("Filter anzeigen");
 
-    public StartUI() {
-        super("WPAPP Auswertung", 1500, 1300);
+    private Runnable reloadRunnable;
+
+    public WPUI() {
+        super("WPAPP Auswertung - Version " + WPAPP.VERSION, 1500, 1300);
 
         setMinWidth(1100);
 
@@ -102,7 +109,7 @@ public class StartUI extends Frame {
         selectedSumPanel.add(selectedSumLabel[0]);
         selectedSumPanel.add(selectedSumLabel[1]);
 
-        onlyWorking.setSelected(true);
+        onlyWithData.setSelected(true);
 
         buildMenu();
         addInformationElements();
@@ -119,7 +126,7 @@ public class StartUI extends Frame {
                 resetMachine,
                 resetTool,
                 tablePanel,
-                onlyWorking,
+                onlyWithData,
                 moreData,
                 selectedSumPanel
         );
@@ -127,13 +134,23 @@ public class StartUI extends Frame {
         /* events hinzufügen */
         addListeners();
 
-        open();
-
         /* Datei auswählen */
         new WochenplanFileReader();
 
+        open();
         /* anzeigen */
         reload();
+    }
+
+    /**
+     * Öffnet das Fenster.
+     */
+    @Override
+    public void open() {
+        super.open();
+
+        if (WPAPP.getStartUI() != null)
+            WPAPP.getStartUI().setVisible(false);
     }
 
     /**
@@ -142,13 +159,25 @@ public class StartUI extends Frame {
     private void buildMenu() {
         setMenuBar(new MenuBar());
         menu.add(menuItem);
+        menu.add(menuItemMonthSelect);
         getMenuBar().add(menu);
+
+        /* shortcuts hinzufügen */
+        menuItem.setShortcut(new MenuShortcut(KeyEvent.VK_R,false));
+        menuItemMonthSelect.setShortcut(new MenuShortcut(KeyEvent.VK_F, true));
 
         /* beim klicken neuen Wochenplan erstellen */
         menuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 WPAPP.setWochenplan(new Wochenplan());
+            }
+        });
+
+        menuItemMonthSelect.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new FilterUI();
             }
         });
     }
@@ -161,22 +190,22 @@ public class StartUI extends Frame {
         toolTitle.setBounds(270,0,250,60);
         informationTitle.setBounds(530, 0, getWidth()-520, 60);
 
-        machineScrollPane.setBounds(10,40, 250, getHeight() - 170);
+        machineScrollPane.setBounds(10,40, 250, getHeight() - 190);
 
-        toolScrollPane.setBounds(270, 40, 250, getHeight() - 170);
+        toolScrollPane.setBounds(270, 40, 250, getHeight() - 190);
 
         informationPanel.setBounds(540, 40, getWidth()-560, 70);
 
-        resetMachine.setBounds(10, getHeight() - 127, 250, 45);
-        resetTool.setBounds(270, getHeight() - 127, 250, 45);
+        resetMachine.setBounds(10, getHeight() - 147, 250, 45);
+        resetTool.setBounds(270, getHeight() - 147, 250, 45);
 
-        tablePanel.setBounds(540, 115, getWidth()-560, getHeight() - 200);
+        tablePanel.setBounds(540, 115, getWidth()-560, getHeight() - 220);
 
-        onlyWorking.setBounds(540, getHeight() - 80, 200, 30);
+        onlyWithData.setBounds(540, getHeight() - 100, 200, 30);
 
-        moreData.setBounds(6, getHeight()-80, 518, 30);
+        moreData.setBounds(10, getHeight()-100, 510, 30);
 
-        selectedSumPanel.setBounds( 750, getHeight() - 80, getWidth() - 770, 40);
+        selectedSumPanel.setBounds( 750, getHeight() - 100, getWidth() - 770, 40);
         selectedSumLabel[0].setBounds(0,0, selectedSumPanel.getWidth(), 20);
         selectedSumLabel[1].setBounds(0,20, selectedSumPanel.getWidth(), 20);
 
@@ -251,7 +280,7 @@ public class StartUI extends Frame {
         });
 
         /* überprüfen, ob Check geklickt wurde */
-        onlyWorking.addActionListener(new ActionListener() {
+        onlyWithData.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 buildTable();
@@ -324,9 +353,16 @@ public class StartUI extends Frame {
             autoChanged = false;
         }
 
-
         /* updaten */
         showInformation(entries);
+
+        /* für reload festlegen */
+        reloadRunnable = new Runnable() {
+            @Override
+            public void run() {
+                machineSelectionChanged();
+            }
+        };
     }
 
     /**
@@ -348,6 +384,14 @@ public class StartUI extends Frame {
 
         /* updaten */
         showInformation(entries);
+
+        /* für reload festlegen */
+        reloadRunnable = new Runnable() {
+            @Override
+            public void run() {
+                toolSelectionChanged();
+            }
+        };
     }
 
     /**
@@ -379,6 +423,10 @@ public class StartUI extends Frame {
      * @param elementList Liste mit neuen Werten.
      */
     private void updateList(JList list, Object[] elementList) {
+        /* anzeige laden */
+        if (!isVisible())
+            open();
+
         String[] content = new String[elementList.length];
 
         /* Zu Array konvertieren */
@@ -403,6 +451,14 @@ public class StartUI extends Frame {
                 reload();
             }
         },50);
+    }
+
+    /**
+     * Lädt die Informationen neu.
+     */
+    public void reloadInformation() {
+        if (reloadRunnable != null)
+            reloadRunnable.run();
     }
 
     /**
@@ -442,10 +498,10 @@ public class StartUI extends Frame {
      * Erstellt die Tabelle.
      */
     private void buildTable() {
-        List<StaffEntry> entries = (lastEntries != null && !onlyWorking.isSelected()) ? lastEntries : new ArrayList<>();
+        List<StaffEntry> entries = (lastEntries != null && !onlyWithData.isSelected()) ? lastEntries : new ArrayList<>();
 
         /* überprüfen, ob gekürzt werden muss */
-        if (onlyWorking.isSelected() && lastEntries != null) {
+        if (onlyWithData.isSelected() && lastEntries != null) {
             // muss gekürzt werden
 
             for (StaffEntry entry : lastEntries) {
@@ -466,14 +522,20 @@ public class StartUI extends Frame {
             StaffEntry entry = entries.get(i);
 
             /* Reihe erstellen */
-            rows[i] = new Object[] {
-                    WPAPP.DISPLAY_FORMAT.format(entry.getDate()),
-                    WPAPP.getShiftName(entry.getShift()),
-                    entry.getMachine().getName(),
-                    entry.getTool().getName(),
-                    entry.getValue(),
-                    getPreparationDisplay(entry)
-            };
+            try {
+                rows[i] = new Object[] {
+                        WPAPP.DISPLAY_FORMAT.format(entry.getDate()),
+                        WPAPP.getShiftName(entry.getShift()),
+                        entry.getMachine().getName(),
+                        entry.getTool().getName(),
+                        entry.getValue(),
+                        getPreparationDisplay(entry)
+                };
+            }
+            catch (IllegalStateException ex) {
+                new ErrorUI("Interner Fehler", ex);
+            }
+
         }
 
         /* Daten zurücksetzen */

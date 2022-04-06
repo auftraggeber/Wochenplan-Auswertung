@@ -1,6 +1,9 @@
 package me.langner.jonas.wpapp.objects;
 
-import me.langner.jonas.wpapp.listener.FactoryChangeListener;
+import me.langner.jonas.wpapp.objects.listener.FactoryChangeListener;
+import me.langner.jonas.wpapp.objects.factory.Machine;
+import me.langner.jonas.wpapp.objects.factory.Tool;
+import me.langner.jonas.wpapp.objects.time.Period;
 
 import java.util.*;
 
@@ -12,7 +15,7 @@ import java.util.*;
  */
 public class Wochenplan {
 
-    private Period period;
+    private Period period, xmlPeriod;
     private Map<Integer, Machine> machines = new HashMap<>();
     private Map<Integer, Tool> tools = new HashMap<>();
     private Set<FactoryChangeListener> listeners = new HashSet<>();
@@ -21,6 +24,11 @@ public class Wochenplan {
         this.period = period;
 
         System.out.println("Zeitraum gesetzt: " + period.getStartDisplay() + " bis " + period.getEndDisplay());
+    }
+
+    public void setXMLPeriod(Period period) {
+        this.xmlPeriod = period;
+        setPeriod(period);
     }
 
     /**
@@ -135,6 +143,10 @@ public class Wochenplan {
 
     public Period getPeriod() {
         return period;
+    }
+
+    public Period getXMLPeriod() {
+        return xmlPeriod;
     }
 
     public Machine getMachineById(int id) {

@@ -1,7 +1,7 @@
-package me.langner.jonas.wpapp.listener;
+package me.langner.jonas.wpapp.objects.listener;
 
-import me.langner.jonas.wpapp.objects.Machine;
-import me.langner.jonas.wpapp.objects.Tool;
+import me.langner.jonas.wpapp.objects.factory.Machine;
+import me.langner.jonas.wpapp.objects.factory.Tool;
 
 /**
  * Schnittstelle, die bei Änderungen aufgerufen wird.

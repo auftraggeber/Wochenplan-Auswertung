@@ -1,4 +1,6 @@
-package me.langner.jonas.wpapp.objects;
+package me.langner.jonas.wpapp.objects.factory;
+
+import me.langner.jonas.wpapp.objects.factory.FactoryElement;
 
 /**
  * Ein Werkzeug, welche benötigt wird, um bestimmte Dinge herzustellen.

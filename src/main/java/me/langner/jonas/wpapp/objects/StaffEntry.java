@@ -1,12 +1,15 @@
 package me.langner.jonas.wpapp.objects;
 
+import me.langner.jonas.wpapp.objects.factory.Machine;
+import me.langner.jonas.wpapp.objects.factory.Tool;
+
 import java.util.Date;
 import java.util.Objects;
 
 /**
  * Ein Eintrag mit Personal.
  * @author Jonas Langner
- * @version 1.0
+ * @version 1.0.1
  * @since 1.0
  */
 public class StaffEntry {
