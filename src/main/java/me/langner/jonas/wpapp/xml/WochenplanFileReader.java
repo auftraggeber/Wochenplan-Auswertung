@@ -65,6 +65,11 @@ public class WochenplanFileReader {
             // Datei gefunden
             Document xml = parser.getDocument();
 
+            if (parser.getDocument() == null) {
+                new ErrorUI("Konnte Datei nicht auswerten.", new NullPointerException("The given reference to the XML document is null."));
+                return;
+            }
+
             /* ab hier interpretieren */
             readPeriod(xml);
             readMachines(xml);

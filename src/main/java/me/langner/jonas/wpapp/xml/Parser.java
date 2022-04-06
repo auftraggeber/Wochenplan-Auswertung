@@ -1,5 +1,6 @@
 package me.langner.jonas.wpapp.xml;
 
+import me.langner.jonas.wpapp.objects.ui.frames.ErrorUI;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -45,7 +46,9 @@ public class Parser {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder documentBuilder =  documentBuilderFactory.newDocumentBuilder();
+
             this.document = documentBuilder.parse(this.file);
+
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         } catch (SAXException e) {
