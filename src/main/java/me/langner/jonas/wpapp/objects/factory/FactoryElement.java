@@ -58,8 +58,13 @@ public abstract class FactoryElement {
             System.err.println("Found duplicate: " + oldEntry);
             System.err.println("New entry: " + entry);
 
-            entry.merge(oldEntry);
-            entries.remove(oldEntry);
+            try {
+                entry.merge(oldEntry);
+                entries.remove(oldEntry);
+            }
+            catch (Exception e) {
+                return;
+            }
         }
 
         entries.add(entry);
