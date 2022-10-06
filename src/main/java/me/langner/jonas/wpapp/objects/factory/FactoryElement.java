@@ -3,10 +3,7 @@ package me.langner.jonas.wpapp.objects.factory;
 import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.StaffEntry;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Erbe für alle Geräte aus Werk.
@@ -56,9 +53,16 @@ public abstract class FactoryElement {
      * @param entry Der Eintrag.
      */
     public void addEntry(StaffEntry entry) {
-        if (!entries.contains(entry))
-            entries.add(entry);
-        else System.err.println("Found duplicate.");
+        if (entries.contains(entry)) {
+            StaffEntry oldEntry = entries.floor(entry);
+            System.err.println("Found duplicate: " + oldEntry);
+            System.err.println("New entry: " + entry);
+
+            entry.merge(oldEntry);
+            entries.remove(oldEntry);
+        }
+
+        entries.add(entry);
     }
 
     /**

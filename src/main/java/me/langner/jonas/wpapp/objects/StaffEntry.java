@@ -3,7 +3,9 @@ package me.langner.jonas.wpapp.objects;
 import me.langner.jonas.wpapp.objects.factory.Machine;
 import me.langner.jonas.wpapp.objects.factory.Tool;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -23,6 +25,8 @@ public class StaffEntry {
     private int shift;
     private float value;
     private boolean preparation;
+
+    private int mergedWith = -1;
 
     /**
      * Erstellt einen neuen Eintrag
@@ -77,6 +81,26 @@ public class StaffEntry {
         return preparation;
     }
 
+    public StaffEntry merge(StaffEntry with) throws IllegalArgumentException {
+        if (with != null) {
+            if (mergedWith == with.getJavaID())
+                return this;
+
+            if (with.hasPreparation() && !hasPreparation()) {
+                preparation = true;
+                mergedWith = with.getJavaID();
+            }
+            else if (hasPreparation() && !with.hasPreparation()) {
+                value = with.getValue();
+                mergedWith = with.getJavaID();
+            }
+            else throw new IllegalArgumentException("Cannot merge two entries with preparation and value!");
+
+            return this;
+        }
+        return null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -92,5 +116,18 @@ public class StaffEntry {
     @Override
     public int hashCode() {
         return Objects.hash(machine, tool, date, shift, value);
+    }
+
+    @Override
+    public String toString() {
+        return "StaffEntry{" +
+                "javaID=" + javaID +
+                ", machine=" + machine +
+                ", tool=" + tool +
+                ", date=" + date +
+                ", shift=" + shift +
+                ", value=" + value +
+                ", preparation=" + preparation +
+                '}';
     }
 }
