@@ -55,14 +55,15 @@ public abstract class FactoryElement {
     public void addEntry(StaffEntry entry) {
         if (entries.contains(entry)) {
             StaffEntry oldEntry = entries.floor(entry);
-            System.err.println("Found duplicate: " + oldEntry);
-            System.err.println("New entry: " + entry);
+            System.out.println("Found duplicate: " + oldEntry);
+            System.out.println("New entry: " + entry);
 
             try {
                 entry.merge(oldEntry);
                 entries.remove(oldEntry);
             }
             catch (Exception e) {
+                System.err.println("Could not merge ID{" + entry.getJavaID() + "} with ID{" + oldEntry.getJavaID() + "}. Continuing...");
                 return;
             }
         }

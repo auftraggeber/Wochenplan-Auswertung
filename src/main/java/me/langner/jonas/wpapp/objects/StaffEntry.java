@@ -81,10 +81,26 @@ public class StaffEntry {
         return preparation;
     }
 
+    /**
+     * Fügt zwei Einträge mit den gleichen Schlüsselattributen zusammen.
+     * Dafür muss einer dieser Einträge eine Rüstung haben.
+     * Der Eintrag mit der Rüstung wird priorisiert. D.h. der Eintrag mit der Rüstung gibt die Rüstung an den
+     * zweiten Eintrag weiter. Der zweite Eintrg gibt dafür die Personalinformationen weiter.
+     * <b>Achtung: Es wird nur ein Objekt angepasst.</b>
+     * @param with Der Eintrag, dessen Werte mit diesem synchronisiert werden sollen.
+     * @return Gibt das Objekt an, das angepasst wurde.
+     * @throws IllegalArgumentException Falls die beiden Objekte nicht miteinander zusammengeführt werden können.
+     */
     public StaffEntry merge(StaffEntry with) throws IllegalArgumentException {
         if (with != null) {
             if (mergedWith == with.getJavaID())
                 return this;
+
+            if (this.javaID == with.javaID)
+                throw new IllegalArgumentException("Cannot merge with itself.");
+
+            if (!this.date.equals(with.date) || this.shift != with.shift || !this.machine.equals(with.machine) || !this.tool.equals(with.tool))
+                throw new IllegalArgumentException("Cannot merge due to different key attributes.");
 
             if (with.hasPreparation() && !hasPreparation()) {
                 preparation = true;

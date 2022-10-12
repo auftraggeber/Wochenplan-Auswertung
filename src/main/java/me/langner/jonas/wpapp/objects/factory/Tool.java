@@ -10,20 +10,20 @@ import me.langner.jonas.wpapp.objects.factory.FactoryElement;
  */
 public class Tool extends FactoryElement {
 
-    private float preparationTime;
+    private int preparationTime;
 
     /**
      * Erstellt ein neues Werkzeug.
      * @param id Die ID des Werkzeugs.
      * @param name Der Name des Werkzeugs.
-     * @param preparationTime Die Rüstzeit des Werkzeugs.
+     * @param preparationTimeInMinutes Die Rüstzeit des Werkzeugs.
      */
-    public Tool(int id, String name, float preparationTime) {
+    public Tool(int id, String name, int preparationTimeInMinutes) {
         super(id, name);
-        this.preparationTime = preparationTime;
+        this.preparationTime = preparationTimeInMinutes;
     }
 
-    public float getPreparationTime() {
+    public int getPreparationTime() {
         return preparationTime;
     }
 }

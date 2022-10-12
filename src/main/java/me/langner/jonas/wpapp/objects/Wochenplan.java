@@ -36,6 +36,10 @@ public class Wochenplan {
      * @param machine Die Maschine
      */
     public void addMachine(Machine machine) {
+        if (machine == null) {
+            return;
+        }
+
         if (!machines.containsKey(machine.getId())) {
             machines.put(machine.getId(), machine);
 
@@ -55,6 +59,10 @@ public class Wochenplan {
      * @param tool Das Werkzeug.
      */
     public void addTool(Tool tool) {
+        if (tool == null) {
+            return;
+        }
+
         if (!tools.containsKey(tool.getId())) {
             tools.put(tool.getId(), tool);
 
@@ -70,6 +78,10 @@ public class Wochenplan {
      * @param machine Die zu entfernende Maschine.
      */
     public void removeMachine(Machine machine) {
+        if (machine == null) {
+            return;
+        }
+
         if (machines.containsKey(machine.getId())) {
             machines.remove(machine.getId());
 
@@ -86,6 +98,10 @@ public class Wochenplan {
      * @param tool Das zu entfernende Werkzeug.
      */
     public void removeTool(Tool tool) {
+        if (tool == null) {
+            return;
+        }
+
         if (tools.containsKey(tool.getId())) {
             tools.remove(tool.getId());
 

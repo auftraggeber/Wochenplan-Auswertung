@@ -377,7 +377,7 @@ public class WochenplanFileReader {
 
         int toolID = -1;
         String toolName = null;
-        float preparationTime = -1F;
+        int preparationTime = -1;
 
         /* jedes Kind ermitteln */
         if (toolNode.getChildNodes().getLength() > 0) {
@@ -404,7 +404,7 @@ public class WochenplanFileReader {
                     case "preparation-time":
                         // es handelt sich um die Rüstzeit -> speichern
                         try {
-                            preparationTime = Float.parseFloat(child.getTextContent());
+                            preparationTime = Integer.parseInt(child.getTextContent());
                         }
                         catch (Exception ex) {
                             ex.printStackTrace();
