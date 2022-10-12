@@ -38,6 +38,9 @@ public class StaffEntry {
      * @param preparation Gibt an, ob Rüstung oder nicht.
      */
     public StaffEntry(Machine machine, Tool tool, Date date, int shift, float value, boolean preparation) {
+        if (machine == null || tool == null || date == null || shift < 0)
+            throw new IllegalArgumentException("Key arguments must not be null or negative!");
+
         this.machine = machine;
         this.tool = tool;
         this.date = date;
