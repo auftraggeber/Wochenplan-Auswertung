@@ -18,14 +18,16 @@ class StaffEntryTest {
     private Machine machine;
     private Tool tool;
     private final Date now = new Date();
+    private Wochenplan wochenplan;
 
     @BeforeEach
     void setUp() {
-        WPAPP.getWochenplan().setPeriod(new Period(now, now));
+        wochenplan = new Wochenplan();
+        wochenplan.setPeriod(new Period(now, now));
         machine = new Machine(1, "Testmaschine");
         tool = new Tool(1, "Testwerkzeug", 90);
-        WPAPP.getWochenplan().addMachine(machine);
-        WPAPP.getWochenplan().addTool(tool);
+        wochenplan.addMachine(machine);
+        wochenplan.addTool(tool);
         staffEntry = new StaffEntry(machine, tool, now, 0, 1.5F, false);
     }
 

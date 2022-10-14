@@ -4,6 +4,7 @@ import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.factory.Machine;
 import me.langner.jonas.wpapp.objects.factory.Tool;
 import me.langner.jonas.wpapp.objects.listener.FactoryChangeListener;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,12 +12,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class WochenplanTest {
 
-    private Wochenplan wochenplan;
-    private FactoryChangeListener listener;
-    private int machineAddedCount = 0, machineRemovedCount = 0, toolAddedCount = 0, toolRemovedCount = 0;
+    private static Wochenplan wochenplan;
+    private static FactoryChangeListener listener;
+    private static int machineAddedCount = 0, machineRemovedCount = 0, toolAddedCount = 0, toolRemovedCount = 0;
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void init() {
+        wochenplan = new Wochenplan();
         listener = new FactoryChangeListener() {
             @Override
             public void machineAdded(Machine machine) {
@@ -38,11 +40,16 @@ class WochenplanTest {
                 ++toolRemovedCount;
             }
         };
-
-        wochenplan = WPAPP.getWochenplan();
         wochenplan.addListener(
                 listener
         );
+    }
+
+    @BeforeEach
+    void setUp() {
+
+
+
     }
 
     @Test

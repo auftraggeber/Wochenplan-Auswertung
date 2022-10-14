@@ -83,7 +83,7 @@ public class DateField extends JFormattedTextField {
      */
     public void setDefaultDate(boolean xml) {
         /* Zeit auslesen */
-        Period period = (xml) ? WPAPP.getWochenplan().getXMLPeriod() : WPAPP.getWochenplan().getPeriod();
+        Period period = (xml) ? WPAPP.getWochenplan().getPeriod() : WPAPP.getWochenplan().getFilterPeriod();
 
         /* ermitteln, welches Datum */
         if (dateType.equals(DateType.START)) {

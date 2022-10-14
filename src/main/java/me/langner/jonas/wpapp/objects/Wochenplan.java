@@ -1,5 +1,7 @@
 package me.langner.jonas.wpapp.objects;
 
+import me.langner.jonas.wpapp.objects.filter.PeriodFilter;
+import me.langner.jonas.wpapp.objects.filter.StaffEntryFilter;
 import me.langner.jonas.wpapp.objects.listener.FactoryChangeListener;
 import me.langner.jonas.wpapp.objects.factory.Machine;
 import me.langner.jonas.wpapp.objects.factory.Tool;
@@ -15,20 +17,17 @@ import java.util.*;
  */
 public class Wochenplan {
 
-    private Period period, xmlPeriod;
+    private Period filterPeriod, xmlPeriod;
     private Map<Integer, Machine> machines = new HashMap<>();
     private Map<Integer, Tool> tools = new HashMap<>();
     private Set<FactoryChangeListener> listeners = new HashSet<>();
 
-    public void setPeriod(Period period) {
-        this.period = period;
-
-        System.out.println("Zeitraum gesetzt: " + period.getStartDisplay() + " bis " + period.getEndDisplay());
+    public void clearFilterPeriod() {
+        filterPeriod = null;
     }
 
-    public void setXMLPeriod(Period period) {
+    public void setPeriod(Period period) {
         this.xmlPeriod = period;
-        setPeriod(period);
     }
 
     /**
@@ -157,11 +156,35 @@ public class Wochenplan {
         return Collections.unmodifiableCollection(tools.values());
     }
 
-    public Period getPeriod() {
-        return period;
+    public Period getFilterPeriod() {
+        if (filterPeriod != null)
+            return filterPeriod;
+
+        Collection<StaffEntryFilter> filters = StaffEntryFilter.getStaffEntryFilters();
+
+        if (!filters.isEmpty()) {
+            Date start = xmlPeriod.getStart();
+            Date end = xmlPeriod.getEnd();
+
+            for (StaffEntryFilter staffEntryFilter : filters) {
+                if (staffEntryFilter instanceof PeriodFilter) {
+                    PeriodFilter filter = (PeriodFilter) staffEntryFilter;
+                    if (start.before(filter.getStart()))
+                        start = filter.getStart();
+
+                    if (end.after(filter.getEnd()))
+                        end = filter.getEnd();
+                }
+            }
+
+            filterPeriod = new Period(start, end);
+            return filterPeriod;
+        }
+
+        return xmlPeriod;
     }
 
-    public Period getXMLPeriod() {
+    public Period getPeriod() {
         return xmlPeriod;
     }
 
@@ -182,7 +205,7 @@ public class Wochenplan {
     @Override
     public Wochenplan clone() {
         Wochenplan clone = new Wochenplan();
-        clone.period = period;
+        clone.filterPeriod = filterPeriod;
         clone.machines = machines;
         clone.tools = tools;
         clone.listeners = listeners;

@@ -484,7 +484,7 @@ public class WPUI extends Frame {
         /* in Stunden zusammenfassen */
         preparationTimeSum = preparationTimeSum / 60F;
 
-        sumInfoText[0].setText("Im Zeitraum vom " + WPAPP.getWochenplan().getPeriod().getStartDisplay() + " bis " + WPAPP.getWochenplan().getPeriod().getEndDisplay()
+        sumInfoText[0].setText("Im Zeitraum vom " + WPAPP.getWochenplan().getFilterPeriod().getStartDisplay() + " bis " + WPAPP.getWochenplan().getFilterPeriod().getEndDisplay()
                 + " standen " + sum + " Werker an dieser Auswahl.");
         sumInfoText[1].setText("Die Rüstzeit betrug " + preparationTimeSum + " Stunden. Es gab insgesamt " + preparations + " Rüstungen.");
 

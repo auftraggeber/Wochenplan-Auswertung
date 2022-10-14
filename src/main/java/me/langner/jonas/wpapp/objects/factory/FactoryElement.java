@@ -2,6 +2,7 @@ package me.langner.jonas.wpapp.objects.factory;
 
 import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.StaffEntry;
+import me.langner.jonas.wpapp.objects.filter.StaffEntryFilter;
 
 import java.util.*;
 
@@ -80,23 +81,9 @@ public abstract class FactoryElement {
             entries.remove(entry);
     }
 
-    public Set<StaffEntry> getEntries() {
-        Set<StaffEntry> filteredEntries = new HashSet<>();
-
-        for (StaffEntry entry : entries) {
-            /* ermitteln, ob im Rahmen */
-            if ((
-                    entry.getDate().before(WPAPP.getWochenplan().getPeriod().getEnd()) &&
-                            entry.getDate().after(WPAPP.getWochenplan().getPeriod().getStart())
-            ) || (
-                    entry.getDate().equals(WPAPP.getWochenplan().getPeriod().getStart()) ||
-                            entry.getDate().equals(WPAPP.getWochenplan().getPeriod().getEnd())
-            ))
-                filteredEntries.add(entry);
-        }
-
+    public List<StaffEntry> getEntries() {
         /* filter ausgeben */
-        return Collections.unmodifiableSet(filteredEntries);
+        return Collections.unmodifiableList(StaffEntryFilter.filterStaffEntriesByAllFilters(entries));
     }
 
     public int getId() {

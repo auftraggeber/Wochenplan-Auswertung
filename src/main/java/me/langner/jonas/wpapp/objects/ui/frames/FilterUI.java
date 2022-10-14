@@ -1,6 +1,7 @@
 package me.langner.jonas.wpapp.objects.ui.frames;
 
 import me.langner.jonas.wpapp.WPAPP;
+import me.langner.jonas.wpapp.objects.filter.PeriodFilter;
 import me.langner.jonas.wpapp.objects.time.Period;
 import me.langner.jonas.wpapp.objects.time.SelectionMonth;
 import me.langner.jonas.wpapp.objects.ui.elements.DateField;
@@ -126,7 +127,7 @@ public class FilterUI extends Frame {
                         end = start;
                     }
 
-                    WPAPP.getWochenplan().setPeriod(new Period(start,end));
+                    new PeriodFilter(start,end);
                     WPAPP.getUI().reloadInformation();
 
                     setVisible(false);

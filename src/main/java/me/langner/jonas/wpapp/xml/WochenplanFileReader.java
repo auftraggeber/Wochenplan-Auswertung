@@ -105,16 +105,16 @@ public class WochenplanFileReader {
                     Date endDate = WPAPP.SQL_FORMAT.parse(end.getTextContent());
 
                     /* überprüfen, ob nicht schon ein anderes Datum */
-                    if (WPAPP.getWochenplan().getPeriod() != null && WPAPP.getWochenplan().getPeriod().getStart().before(startDate))
-                        startDate = WPAPP.getWochenplan().getPeriod().getStart();
+                    if (WPAPP.getWochenplan().getFilterPeriod() != null && WPAPP.getWochenplan().getFilterPeriod().getStart().before(startDate))
+                        startDate = WPAPP.getWochenplan().getFilterPeriod().getStart();
 
                     /* gleiche für Ende */
-                    if (WPAPP.getWochenplan().getPeriod() != null && WPAPP.getWochenplan().getPeriod().getEnd().after(endDate))
-                        endDate = WPAPP.getWochenplan().getPeriod().getEnd();
+                    if (WPAPP.getWochenplan().getFilterPeriod() != null && WPAPP.getWochenplan().getFilterPeriod().getEnd().after(endDate))
+                        endDate = WPAPP.getWochenplan().getFilterPeriod().getEnd();
 
                     /* ZeitPeriode speichern */
                     Period period = new Period(startDate, endDate);
-                    WPAPP.getWochenplan().setXMLPeriod(period);
+                    WPAPP.getWochenplan().setPeriod(period);
                 } catch (ParseException e) {
                     new ErrorUI("Konnte Daten nicht korrekt lesen. Die Datei ist möglicherweise beschädigt.", e);
                 }
