@@ -12,8 +12,8 @@ public interface IStaffEntryFilter {
 
     /**
      * Überprüft, ob ein Filter den Eintrag passieren lässt.
-     * @param entry Der Eintrag, welcher vom
-     * @return
+     * @param entry Der Eintrag, welcher vom Filter überprüft werden soll.
+     * @return Gibt an, ob der Filter den Eintrag passieren lässt.
      */
     boolean staffEntryGetsAccepted(StaffEntry entry);
 
