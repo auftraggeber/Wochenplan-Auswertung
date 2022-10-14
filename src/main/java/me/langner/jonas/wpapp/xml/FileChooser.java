@@ -1,12 +1,14 @@
 package me.langner.jonas.wpapp.xml;
 
 import me.langner.jonas.wpapp.objects.exception.IllegalFileExtensionException;
+import me.langner.jonas.wpapp.objects.settings.Setting;
 import me.langner.jonas.wpapp.objects.ui.frames.ErrorUI;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +24,8 @@ public class FileChooser {
     private File[] files;
 
     public FileChooser() {
-        jFileChooser = new JFileChooser(System.getProperty("user.home") + "/Desktop");
+        System.out.println(getStartLocation());
+        jFileChooser = new JFileChooser(getStartLocation());
         jFileChooser.setMultiSelectionEnabled(true);
         addFilter();
 
@@ -36,6 +39,28 @@ public class FileChooser {
             }
         }
 
+    }
+
+    /**
+     * Ermittelt, welchen Pfad der Chooser anzeigen soll.
+     * @return Der Pfad, der standardmäßig geöffnet ist.
+     */
+    private String getStartLocation() {
+        final Setting setting = Setting.getSetting(Setting.Type.LAST_FILE_CHOOSER_LOCATION);
+
+        if (setting != null) {
+            try {
+                String location = setting.getString();
+
+                if (location != null)
+                    return location;
+
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+        }
+
+        return System.getProperty("user.home") + "/Desktop";
     }
 
     /**
@@ -73,6 +98,17 @@ public class FileChooser {
 
                 for (int i = 0; i < fileArray.length; i++) {
                     fileArray[i] = rightFiles.get(i);
+                }
+
+                final String location = fileArray[0].getParent();
+                final Setting locationSetting = Setting.getSetting(Setting.Type.LAST_FILE_CHOOSER_LOCATION);
+
+                if (locationSetting != null) {
+                    try {
+                        locationSetting.set(location);
+                    } catch (IOException exception) {
+                        exception.printStackTrace();
+                    }
                 }
 
                 return fileArray;
