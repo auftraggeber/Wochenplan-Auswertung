@@ -2,6 +2,7 @@ package me.langner.jonas.wpapp.objects.ui.frames;
 
 import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.filter.EndFilter;
+import me.langner.jonas.wpapp.objects.filter.StaffEntryFilter;
 import me.langner.jonas.wpapp.objects.filter.StartFilter;
 import me.langner.jonas.wpapp.objects.time.Period;
 import me.langner.jonas.wpapp.objects.time.SelectionMonth;
@@ -149,6 +150,8 @@ public class FilterUI extends Frame {
                 dateFields[1].setDefaultDate(true);
 
                 select.setSelectedIndex(0);
+                StaffEntryFilter.reset();
+                WPAPP.getWochenplan().clearFilterPeriod();
             }
         });
     }
