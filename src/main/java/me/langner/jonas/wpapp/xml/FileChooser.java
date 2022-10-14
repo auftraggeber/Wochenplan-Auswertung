@@ -7,6 +7,8 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Wählt eine Datei aus.
@@ -17,16 +19,16 @@ import java.io.FileNotFoundException;
 public class FileChooser {
 
     private JFileChooser jFileChooser;
-    private File file;
+    private File[] files;
 
     public FileChooser() {
         jFileChooser = new JFileChooser(System.getProperty("user.home") + "/Desktop");
-
+        jFileChooser.setMultiSelectionEnabled(true);
         addFilter();
 
-        while (this.file == null) {
+        while (this.files == null) {
             try {
-                this.file = open();
+                this.files = open();
             } catch (FileNotFoundException e) {
                 break;
             } catch (IllegalFileExtensionException e) {
@@ -47,23 +49,36 @@ public class FileChooser {
     /**
      * Öffnet die Dateiauswahl.
      */
-    private File open() throws FileNotFoundException, IllegalFileExtensionException {
+    private File[] open() throws FileNotFoundException, IllegalFileExtensionException {
 
         int result = jFileChooser.showOpenDialog(null);
 
         /* überprüfen, ob Datei gewählt */
         if (result == JFileChooser.APPROVE_OPTION) {
             // Datei geöffnet
-            File file = jFileChooser.getSelectedFile();
+            File[] files = jFileChooser.getSelectedFiles();
+
+            List<File> rightFiles = new ArrayList<>();
+
+            for (File file : files) {
+                if (file.getAbsolutePath().endsWith(".wpapp")) {
+                    rightFiles.add(file);
+                }
+            }
 
             /* überprüfen, ob richtiges Format */
-            if (file != null && file.getAbsolutePath().endsWith(".wpapp")) {
+            if (rightFiles != null && !rightFiles.isEmpty()) {
                 // richtiges Format
+                File[] fileArray = new File[rightFiles.size()];
 
-                return file;
+                for (int i = 0; i < fileArray.length; i++) {
+                    fileArray[i] = rightFiles.get(i);
+                }
+
+                return fileArray;
             }
             else {
-                if (file == null)
+                if (rightFiles == null || files == null || files.length <= 0)
                     throw new FileNotFoundException("The filechooser returned no file.");
                 else
                     throw new IllegalFileExtensionException("The chosen file has not the extension .wpapp", "wpapp");
@@ -73,8 +88,8 @@ public class FileChooser {
         else throw new FileNotFoundException("The chooser was canceled.");
     }
 
-    public File getFile() {
-        return file;
+    public File[] getFiles() {
+        return files;
     }
 
 }

@@ -25,40 +25,31 @@ import java.util.List;
  */
 public class WochenplanFileReader {
 
-    private Parser parser;
-
     /**
      * Sucht automatisch nach der Datei.
      */
     public WochenplanFileReader() {
-        this(new FileChooser().getFile());
+        this(new FileChooser().getFiles());
     }
 
     /**
      * Interpretiert die WPAPP-Datei.
-     * @param file Die zu interpretierende Datei.
+     * @param files Die zu interpretierende Datei.
      */
-    public WochenplanFileReader(File file) {
-        if (file != null) {
-            this.parser = new Parser(file);
+    public WochenplanFileReader(File[] files) {
+        if (files != null) {
+            for (File file : files) {
+                Parser parser = new Parser(file);
+                start(parser);
+            }
 
-            start();
         }
-
-    }
-
-    /**
-     * Interpretiert die WPAPP-Datei.
-     * @param path Die zu interpretierende Datei.
-     */
-    public WochenplanFileReader(String path) {
-        this(new File(path));
     }
 
     /**
      * Startet die Interpretation.
      */
-    private void start() {
+    private void start(Parser parser) {
 
         /* überprüfen, ob Datei gefunden */
         if (parser != null && parser.getFile() != null) {
