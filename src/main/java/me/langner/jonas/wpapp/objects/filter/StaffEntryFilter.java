@@ -6,42 +6,55 @@ import me.langner.jonas.wpapp.objects.StaffEntry;
 import java.io.Serializable;
 import java.util.*;
 
-public abstract class StaffEntryFilter implements Serializable {
+/**
+ * Eine Klasse, die die typischen Filterfunktionen zum Filtern von
+ * {@link StaffEntry}s bereitstellt.
+ * Die Filterfunktion {@link #filter(StaffEntry)} an sich wird von den Unterklassen implementiert.
+ * Nutzt dabei des Dekorierermuster.
+ * @author Jonas Langner
+ * @version 0.1.0
+ * @since 14.10.22
+ */
+public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilter {
 
-    private static final long serialVersionUID = 1L;
+    private static StaffEntryFilter active = null;
 
-    private static final HashMap<UUID, StaffEntryFilter> FILTERS = new HashMap<>();
-
-    public static Collection<StaffEntryFilter> getStaffEntryFilters() {
-        return FILTERS.values();
-    }
-
-    public static List<StaffEntry> filterStaffEntriesByAllFilters(final Collection<StaffEntry> entries) {
-        List<StaffEntry> list = new ArrayList<>(entries);
-
-        for (StaffEntryFilter filter : getStaffEntryFilters()) {
-            list = filter.filterStaffEntries(list);
+    public static StaffEntryFilter getActive() {
+        if (active == null) {
+            reset();
         }
 
-        return list;
+        return active;
     }
 
-    private final UUID id;
+    public static void reset() {
+        active = new StaffEntryFilter(null) {
+            @Override
+            public boolean staffEntryGetsAccepted(StaffEntry entry) {
+                return true;
+            }
+        };
+    }
 
+    private StaffEntryFilter decorated;
+
+    /**
+     * Registriert einen neuen Filter.
+     * Dabei wird der schon bestehende Filter dekoriert.
+     */
     protected StaffEntryFilter() {
-        UUID id = null;
+        this(getActive());
+    }
 
-        do {
-            id = UUID.randomUUID();
-        }
-        while (FILTERS.containsKey(id));
-
-        this.id = id;
-        FILTERS.put(id, this);
-        System.out.println("Registered new filter: " + this.getClass().getSimpleName());
-
-        if (this instanceof PeriodFilter)
-            WPAPP.getWochenplan().clearFilterPeriod();
+    /**
+     * Registriert einen neuen Filter.
+     * @param decorated Der Filter der dekoriert werden soll.
+     */
+    protected StaffEntryFilter(StaffEntryFilter decorated) {
+        this.decorated = decorated;
+        String dec = decorated == null ? "null" : decorated.getClass().getSimpleName();
+        System.out.println("Registered new filter: " + this.getClass().getSimpleName() + " decorating " + dec);
+        active = this;
     }
 
     /**
@@ -49,8 +62,17 @@ public abstract class StaffEntryFilter implements Serializable {
      * @param entry Der Eintrag, welcher gefiltert werden soll.
      * @return Gibt an, ob der Filter diesen Eintrag erlaubt oder, ob dieser Eintrag vom Filter verworfen werden soll.
      */
-    public abstract boolean filter(StaffEntry entry);
+    public boolean filter(StaffEntry entry) {
+        return (decorated == null || decorated.filter(entry)) && this.staffEntryGetsAccepted(entry);
+    }
 
+    /**
+     * Filtert mehrere StaffEntries.
+     * @param entries Die Einträge, die gefiltert werden sollen.
+     * @deprecated Verwendet die Methode {@link #filterStaffEntries(Collection)} und wandelt das Array in eine {@link List<StaffEntry>} um.
+     * @return Die Einträge, die den Filter passiert haben.
+     */
+    @Deprecated
     public StaffEntry[] filterStaffEntries(final StaffEntry[] entries) {
         List<StaffEntry> list = Arrays.asList(entries);
 
@@ -67,6 +89,11 @@ public abstract class StaffEntryFilter implements Serializable {
         return array;
     }
 
+    /**
+     * Filtert mehrere StaffEntries.
+     * @param entries Die Einträge, die gefiltert werden sollen.
+     * @return Die Einträge, die den Filter passiert haben.
+     */
     public List<StaffEntry> filterStaffEntries(final Collection<StaffEntry> entries) {
         List<StaffEntry> filtered = new ArrayList<>();
 
@@ -78,11 +105,17 @@ public abstract class StaffEntryFilter implements Serializable {
         return Collections.unmodifiableList(filtered);
     }
 
-    public UUID getId() {
-        return id;
+    public <T extends StaffEntryFilter> T getFirstFilterOfType(Class<T> clazz) {
+        if (this.getClass().equals(clazz))
+            return (T) this;
+
+        if (decorated != null)
+            return decorated.getFirstFilterOfType(clazz);
+
+        return null;
     }
 
-    public void remove() {
-        FILTERS.remove(this.getId());
+    protected StaffEntryFilter getDecorated() {
+        return decorated;
     }
 }

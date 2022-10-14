@@ -83,7 +83,7 @@ public abstract class FactoryElement {
 
     public List<StaffEntry> getEntries() {
         /* filter ausgeben */
-        return Collections.unmodifiableList(StaffEntryFilter.filterStaffEntriesByAllFilters(entries));
+        return Collections.unmodifiableList(StaffEntryFilter.getActive().filterStaffEntries(entries));
     }
 
     public int getId() {

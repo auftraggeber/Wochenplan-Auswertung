@@ -1,7 +1,8 @@
 package me.langner.jonas.wpapp.objects.ui.frames;
 
 import me.langner.jonas.wpapp.WPAPP;
-import me.langner.jonas.wpapp.objects.filter.PeriodFilter;
+import me.langner.jonas.wpapp.objects.filter.EndFilter;
+import me.langner.jonas.wpapp.objects.filter.StartFilter;
 import me.langner.jonas.wpapp.objects.time.Period;
 import me.langner.jonas.wpapp.objects.time.SelectionMonth;
 import me.langner.jonas.wpapp.objects.ui.elements.DateField;
@@ -127,7 +128,8 @@ public class FilterUI extends Frame {
                         end = start;
                     }
 
-                    new PeriodFilter(start,end);
+                    new StartFilter(start);
+                    new EndFilter(end);
                     WPAPP.getUI().reloadInformation();
 
                     setVisible(false);

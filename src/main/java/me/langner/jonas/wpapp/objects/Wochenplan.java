@@ -1,7 +1,8 @@
 package me.langner.jonas.wpapp.objects;
 
-import me.langner.jonas.wpapp.objects.filter.PeriodFilter;
+import me.langner.jonas.wpapp.objects.filter.EndFilter;
 import me.langner.jonas.wpapp.objects.filter.StaffEntryFilter;
+import me.langner.jonas.wpapp.objects.filter.StartFilter;
 import me.langner.jonas.wpapp.objects.listener.FactoryChangeListener;
 import me.langner.jonas.wpapp.objects.factory.Machine;
 import me.langner.jonas.wpapp.objects.factory.Tool;
@@ -160,28 +161,24 @@ public class Wochenplan {
         if (filterPeriod != null)
             return filterPeriod;
 
-        Collection<StaffEntryFilter> filters = StaffEntryFilter.getStaffEntryFilters();
+        if (xmlPeriod == null)
+            return null;
 
-        if (!filters.isEmpty()) {
-            Date start = xmlPeriod.getStart();
-            Date end = xmlPeriod.getEnd();
+        Date start = xmlPeriod.getStart();
+        Date end = xmlPeriod.getEnd();
 
-            for (StaffEntryFilter staffEntryFilter : filters) {
-                if (staffEntryFilter instanceof PeriodFilter) {
-                    PeriodFilter filter = (PeriodFilter) staffEntryFilter;
-                    if (start.before(filter.getStart()))
-                        start = filter.getStart();
+        StartFilter startFilter = StaffEntryFilter.getActive().getFirstFilterOfType(StartFilter.class);
+        EndFilter endFilter = StaffEntryFilter.getActive().getFirstFilterOfType(EndFilter.class);
 
-                    if (end.after(filter.getEnd()))
-                        end = filter.getEnd();
-                }
-            }
+        if (startFilter != null && startFilter.getStart() != null && startFilter.getStart().after(start))
+            start = startFilter.getStart();
 
-            filterPeriod = new Period(start, end);
-            return filterPeriod;
-        }
+        if (endFilter != null && endFilter.getEnd() != null && endFilter.getEnd().before(end))
+            end = endFilter.getEnd();
 
-        return xmlPeriod;
+        filterPeriod = new Period(start, end);
+
+        return filterPeriod;
     }
 
     public Period getPeriod() {
