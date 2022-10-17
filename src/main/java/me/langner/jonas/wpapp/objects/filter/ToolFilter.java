@@ -3,6 +3,7 @@ package me.langner.jonas.wpapp.objects.filter;
 import me.langner.jonas.wpapp.objects.StaffEntry;
 import me.langner.jonas.wpapp.objects.factory.Tool;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,11 +16,11 @@ import java.util.List;
  */
 public class ToolFilter extends StaffEntryFilter {
 
-    private List<Tool> toolList;
+    private List<Tool> toolList = new ArrayList<>();
 
     public ToolFilter(List<Tool> toolList) {
         super();
-        this.toolList = toolList;
+        this.toolList.addAll(toolList);
     }
 
     @Override

@@ -3,6 +3,7 @@ package me.langner.jonas.wpapp.objects.filter;
 import me.langner.jonas.wpapp.objects.StaffEntry;
 import me.langner.jonas.wpapp.objects.factory.Machine;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,11 +17,11 @@ import java.util.List;
  */
 public class MachineFilter extends StaffEntryFilter {
 
-    private List<Machine> machineList;
+    private List<Machine> machineList = new ArrayList<>();
 
     public MachineFilter(List<Machine> machineList) {
         super();
-        this.machineList = machineList;
+        this.machineList.addAll(machineList);
     }
 
     @Override
