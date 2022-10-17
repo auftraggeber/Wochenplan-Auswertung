@@ -223,7 +223,7 @@ public class WPUI extends Frame {
         WPAPP.getWochenplan().addListener(new FactoryChangeListener() {
             @Override
             public void machineAdded(Machine machine) {
-                updateList(machineList, WPAPP.getWochenplan().getMachines().toArray());
+                updateList(machineList, WPAPP.getWochenplan().getFilteredMachines().toArray());
             }
 
             @Override
@@ -233,7 +233,7 @@ public class WPUI extends Frame {
 
             @Override
             public void machineRemoved(Machine machine) {
-                updateList(machineList, WPAPP.getWochenplan().getMachines().toArray());
+                updateList(machineList, WPAPP.getWochenplan().getFilteredMachines().toArray());
             }
 
             @Override
@@ -452,6 +452,11 @@ public class WPUI extends Frame {
                 reload();
             }
         },50);
+    }
+
+    public void updateLists() {
+        updateList(machineList, WPAPP.getWochenplan().getFilteredMachines().toArray());
+        updateList(toolList, WPAPP.getWochenplan().getTools().toArray());
     }
 
     /**

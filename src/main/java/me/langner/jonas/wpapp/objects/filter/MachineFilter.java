@@ -1,11 +1,13 @@
 package me.langner.jonas.wpapp.objects.filter;
 
+import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.StaffEntry;
 import me.langner.jonas.wpapp.objects.factory.Machine;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Ein Filter, welcher nach bestimmten {@link Machine}n filtert.
@@ -18,10 +20,14 @@ import java.util.List;
 public class MachineFilter extends StaffEntryFilter {
 
     private List<Machine> machineList = new ArrayList<>();
+    private List<Machine> filteredMachines = null;
+
+    private Vector<StaffEntryFilter> lastCheck = null;
 
     public MachineFilter(List<Machine> machineList) {
         super();
         this.machineList.addAll(machineList);
+        WPAPP.getWochenplan().resetFilteredMachines();
     }
 
     @Override
@@ -30,7 +36,10 @@ public class MachineFilter extends StaffEntryFilter {
     }
 
     public void setMachines(List<Machine> machineList) {
+        if (!this.machineList.equals(machineList))
+            lastCheck = null;
         this.machineList = machineList;
+        WPAPP.getWochenplan().resetFilteredMachines();
     }
 
     public List<Machine> getMachines() {
@@ -63,5 +72,38 @@ public class MachineFilter extends StaffEntryFilter {
         }
 
         return machineList.size() + " Maschinen";
+    }
+
+    /**
+     * Geht durch den gesamten {@link #getFilterStack()} und überprüft, welche Maschinen nicht herausgefiltert werden.
+     * @return Liste aller Maschinen, die den Filterstack passieren.
+     */
+    public List<Machine> getFilteredMachines() {
+        if (lastCheck != null && lastCheck.equals(getFilterStack()))
+            return filteredMachines;
+
+        StaffEntryFilter next = this;
+
+        do {
+            next = next.getDecorated();
+        }
+        while (next != null && !(next instanceof MachineFilter));
+
+        if (next == null) {
+            lastCheck = getFilterStack();
+            filteredMachines = new ArrayList<>(getMachines());
+            return filteredMachines;
+        }
+
+        filteredMachines = new ArrayList<>();
+
+        for (Machine machine : ((MachineFilter)next).getFilteredMachines()) {
+            if (machineList.contains(machine))
+                filteredMachines.add(machine);
+        }
+
+        lastCheck = getFilterStack();
+
+        return filteredMachines;
     }
 }

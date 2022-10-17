@@ -45,6 +45,7 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
             }
         };
         WPAPP.getWochenplan().clearFilterPeriod();
+        WPAPP.getWochenplan().resetFilteredMachines();
     }
 
     private StaffEntryFilter decorated;

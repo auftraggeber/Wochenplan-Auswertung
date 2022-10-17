@@ -63,6 +63,7 @@ public class DateField extends JFormattedTextField {
     }
 
     private DateType dateType;
+    private boolean edited = false;
 
     /**
      * Creates a new Textfeld.
@@ -139,6 +140,8 @@ public class DateField extends JFormattedTextField {
                         setText(getText().substring(0,getText().length()-1));
                     }
                 }
+
+                edited = true;
             }
         };
 
@@ -193,6 +196,23 @@ public class DateField extends JFormattedTextField {
         /* Falls bestimmte länge: muss ein punkt gesetzt werden */
         if (length == 2 || length == 5 && !getText().endsWith("."))
             setText(getText() + ".");
+    }
+
+    public void setValue(final Date date) {
+        if (date == null) {
+            return;
+        }
+        final String asString = WPAPP.DISPLAY_FORMAT.format(date);
+
+        setText(asString);
+    }
+
+    public void setEdited(boolean edited) {
+        this.edited = edited;
+    }
+
+    public boolean wasEdited() {
+        return edited;
     }
 
     public DateType getDateType() {

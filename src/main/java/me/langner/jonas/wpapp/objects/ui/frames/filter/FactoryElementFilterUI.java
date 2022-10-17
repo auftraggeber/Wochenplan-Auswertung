@@ -1,5 +1,6 @@
 package me.langner.jonas.wpapp.objects.ui.frames.filter;
 
+import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.factory.FactoryElement;
 import me.langner.jonas.wpapp.objects.factory.Machine;
 import me.langner.jonas.wpapp.objects.factory.Tool;
@@ -68,6 +69,8 @@ public class FactoryElementFilterUI extends Frame {
         refreshLists();
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setAlwaysOnTop(true);
+        setResizable(false);
         open();
     }
 
@@ -103,6 +106,8 @@ public class FactoryElementFilterUI extends Frame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 strategy.save();
+                WPAPP.getUI().updateLists();
+                WPAPP.getUI().reloadInformation();
                 dispose();
                 new FilterUI();
             }

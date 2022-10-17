@@ -2,6 +2,7 @@ package me.langner.jonas.wpapp.objects.ui.frames.filter;
 
 import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.filter.EndFilter;
+import me.langner.jonas.wpapp.objects.filter.StaffEntryFilter;
 import me.langner.jonas.wpapp.objects.filter.StartFilter;
 import me.langner.jonas.wpapp.objects.time.SelectionMonth;
 import me.langner.jonas.wpapp.objects.ui.elements.DateField;
@@ -39,11 +40,20 @@ public class DateFilterUI extends Frame {
             selectPanel = new JPanel(),
             datePanel = new JPanel();
 
+    private StartFilter startFilter;
+    private EndFilter endFilter;
+
     /**
      * Erstellt ein neues Fenster.
      */
     public DateFilterUI() {
+        this(null, null);
+    }
+
+    public DateFilterUI(final StartFilter startFilter, final EndFilter endFilter) {
         super("Filter", 600, 200);
+        this.startFilter = startFilter;
+        this.endFilter = endFilter;
 
         setResizable(false);
 
@@ -85,6 +95,10 @@ public class DateFilterUI extends Frame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setAlwaysOnTop(true);
         open();
+        if (startFilter != null)
+            dateFields[0].setValue(startFilter.getStart());
+        if (endFilter != null)
+            dateFields[1].setValue(endFilter.getEnd());
     }
 
     /**
@@ -103,6 +117,8 @@ public class DateFilterUI extends Frame {
                     /* Datum anpassen */
                     dateFields[0].setText(WPAPP.DISPLAY_FORMAT.format(DateField.getFirstDayOfMonth(month.getMonth(),0)));
                     dateFields[1].setText(WPAPP.DISPLAY_FORMAT.format(DateField.getLastDayOfMonth(month.getMonth(),0)));
+                    dateFields[0].setEdited(true);
+                    dateFields[1].setEdited(true);
                 }
             }
         });
@@ -124,10 +140,33 @@ public class DateFilterUI extends Frame {
                         );
 
                         end = start;
+                        dateFields[1].setEdited(true);
                     }
 
-                    new StartFilter(start);
-                    new EndFilter(end);
+                    if (startFilter == null)
+                        startFilter = StaffEntryFilter.getActive().getFirstFilterOfType(StartFilter.class);
+
+                    if (endFilter == null)
+                        endFilter = StaffEntryFilter.getActive().getFirstFilterOfType(EndFilter.class);
+
+                    if (dateFields[1].wasEdited()) {
+                        if (endFilter != null) {
+                            endFilter.setEnd(end);
+                        }
+                        else {
+                            endFilter = new EndFilter(end);
+                        }
+                    }
+
+                    if (dateFields[0].wasEdited()) {
+                        if (startFilter != null) {
+                            startFilter.setStart(start);
+                        }
+                        else {
+                            startFilter = new StartFilter(start);
+                        }
+                    }
+
                     WPAPP.getUI().reloadInformation();
 
                     dispose();

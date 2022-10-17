@@ -5,7 +5,6 @@ import me.langner.jonas.wpapp.objects.factory.Machine;
 import me.langner.jonas.wpapp.objects.filter.MachineFilter;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Die restliche Implementation, um im {@link me.langner.jonas.wpapp.objects.ui.frames.filter.FactoryElementFilterUI} die
@@ -23,7 +22,7 @@ public class MachineFilterUIStrategyImpl extends BasicFactoryElementFilterUIStra
      * "Noch hinzufügbar" stehen.
      */
     public MachineFilterUIStrategyImpl() {
-        super(WPAPP.getWochenplan().getMachines(), new ArrayList<>());
+        super(WPAPP.getWochenplan().getAllMachines(), new ArrayList<>());
     }
 
     /**

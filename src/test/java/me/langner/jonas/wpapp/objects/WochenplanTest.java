@@ -1,6 +1,5 @@
 package me.langner.jonas.wpapp.objects;
 
-import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.factory.Machine;
 import me.langner.jonas.wpapp.objects.factory.Tool;
 import me.langner.jonas.wpapp.objects.listener.FactoryChangeListener;
@@ -57,10 +56,10 @@ class WochenplanTest {
         Machine machine = new Machine(1, "Testmaschine");
         final int c = machineAddedCount;
 
-        assertTrue(wochenplan.getMachines().isEmpty());
+        assertTrue(wochenplan.getFilteredMachines().isEmpty());
         wochenplan.addMachine(machine);
-        assertEquals(1, wochenplan.getMachines().size());
-        assertEquals(machine, wochenplan.getMachines().stream().findFirst().get());
+        assertEquals(1, wochenplan.getFilteredMachines().size());
+        assertEquals(machine, wochenplan.getFilteredMachines().stream().findFirst().get());
         assertNull(wochenplan.getMachineById(0));
         assertNull(wochenplan.getMachineByName("TESTMASCHINE"));
         assertEquals(machine, wochenplan.getMachineById(1));
@@ -90,11 +89,11 @@ class WochenplanTest {
         Machine notAddedMachine = new Machine(2, "Testmaschine2");
         final int c = machineRemovedCount;
 
-        assertEquals(1, wochenplan.getMachines().size());
+        assertEquals(1, wochenplan.getFilteredMachines().size());
         wochenplan.removeMachine(notAddedMachine);
-        assertEquals(1, wochenplan.getMachines().size());
+        assertEquals(1, wochenplan.getFilteredMachines().size());
         wochenplan.removeMachine(machine);
-        assertEquals(0, wochenplan.getMachines().size());
+        assertEquals(0, wochenplan.getFilteredMachines().size());
         assertEquals(c+1, machineRemovedCount);
     }
 

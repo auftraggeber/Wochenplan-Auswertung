@@ -1,6 +1,7 @@
 package me.langner.jonas.wpapp.objects;
 
 import me.langner.jonas.wpapp.objects.filter.EndFilter;
+import me.langner.jonas.wpapp.objects.filter.MachineFilter;
 import me.langner.jonas.wpapp.objects.filter.StaffEntryFilter;
 import me.langner.jonas.wpapp.objects.filter.StartFilter;
 import me.langner.jonas.wpapp.objects.listener.FactoryChangeListener;
@@ -23,8 +24,22 @@ public class Wochenplan {
     private Map<Integer, Tool> tools = new HashMap<>();
     private Set<FactoryChangeListener> listeners = new HashSet<>();
 
+    private List<Machine> filteredMachines = null;
+
     public void clearFilterPeriod() {
         filterPeriod = null;
+    }
+
+    public void resetFilteredMachines() {
+        filteredMachines = null;
+
+        if (StaffEntryFilter.getActive() != null) {
+            MachineFilter filter = StaffEntryFilter.getActive().getFirstFilterOfType(MachineFilter.class);
+
+            if (filter != null) {
+                filteredMachines = filter.getFilteredMachines();
+            }
+        }
     }
 
     public void setPeriod(Period period) {
@@ -119,7 +134,7 @@ public class Wochenplan {
      * @return Maschine mit dem Namen (die erste, die es findet).
      */
     public Machine getMachineByName(String name) {
-        for (Machine machine : getMachines()) {
+        for (Machine machine : getFilteredMachines()) {
             if (machine.getName().equals(name))
                 return machine;
         }
@@ -149,7 +164,14 @@ public class Wochenplan {
             listeners.remove(listener);
     }
 
-    public Collection<Machine> getMachines() {
+    public Collection<Machine> getFilteredMachines() {
+        if (filteredMachines != null)
+            return filteredMachines;
+
+        return getAllMachines();
+    }
+
+    public Collection<Machine> getAllMachines() {
         return Collections.unmodifiableCollection(machines.values());
     }
 
@@ -170,11 +192,14 @@ public class Wochenplan {
         StartFilter startFilter = StaffEntryFilter.getActive().getFirstFilterOfType(StartFilter.class);
         EndFilter endFilter = StaffEntryFilter.getActive().getFirstFilterOfType(EndFilter.class);
 
-        if (startFilter != null && startFilter.getStart() != null && startFilter.getStart().after(start))
+        if (startFilter != null && startFilter.getStart() != null)
             start = startFilter.getStart();
 
-        if (endFilter != null && endFilter.getEnd() != null && endFilter.getEnd().before(end))
+        if (endFilter != null && endFilter.getEnd() != null)
             end = endFilter.getEnd();
+
+        if (end.before(start))
+            end = start;
 
         filterPeriod = new Period(start, end);
 
