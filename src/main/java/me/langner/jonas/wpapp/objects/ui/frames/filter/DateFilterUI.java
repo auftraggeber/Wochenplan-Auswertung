@@ -1,20 +1,18 @@
-package me.langner.jonas.wpapp.objects.ui.frames;
+package me.langner.jonas.wpapp.objects.ui.frames.filter;
 
 import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.filter.EndFilter;
-import me.langner.jonas.wpapp.objects.filter.StaffEntryFilter;
 import me.langner.jonas.wpapp.objects.filter.StartFilter;
-import me.langner.jonas.wpapp.objects.time.Period;
 import me.langner.jonas.wpapp.objects.time.SelectionMonth;
 import me.langner.jonas.wpapp.objects.ui.elements.DateField;
+import me.langner.jonas.wpapp.objects.ui.frames.ErrorUI;
+import me.langner.jonas.wpapp.objects.ui.frames.Frame;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.InputMismatchException;
 
 /**
  * Ist das FilterUI.
@@ -22,7 +20,7 @@ import java.util.InputMismatchException;
  * @version 1.0
  * @since 1.0.1
  */
-public class FilterUI extends Frame {
+public class DateFilterUI extends Frame {
 
     private JLabel
             selectTitle = new JLabel("Wählen Sie einen Monat aus", JLabel.CENTER),
@@ -44,7 +42,7 @@ public class FilterUI extends Frame {
     /**
      * Erstellt ein neues Fenster.
      */
-    public FilterUI() {
+    public DateFilterUI() {
         super("Filter", 600, 200);
 
         setResizable(false);
@@ -84,10 +82,9 @@ public class FilterUI extends Frame {
                 resetButton
         );
 
-        reload();
-        setVisible(true);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setAlwaysOnTop(true);
+        open();
     }
 
     /**
@@ -133,7 +130,8 @@ public class FilterUI extends Frame {
                     new EndFilter(end);
                     WPAPP.getUI().reloadInformation();
 
-                    setVisible(false);
+                    dispose();
+                    new FilterUI();
 
 
                 } catch (ParseException parseException) {
@@ -148,10 +146,6 @@ public class FilterUI extends Frame {
             public void actionPerformed(ActionEvent e) {
                 dateFields[0].setDefaultDate(true);
                 dateFields[1].setDefaultDate(true);
-
-                select.setSelectedIndex(0);
-                StaffEntryFilter.reset();
-                WPAPP.getWochenplan().clearFilterPeriod();
             }
         });
     }

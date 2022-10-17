@@ -4,6 +4,8 @@ import me.langner.jonas.wpapp.objects.*;
 import me.langner.jonas.wpapp.objects.ui.frames.ErrorUI;
 import me.langner.jonas.wpapp.objects.ui.frames.StartUI;
 import me.langner.jonas.wpapp.objects.ui.frames.WPUI;
+
+import javax.swing.*;
 import java.awt.*;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
@@ -50,6 +52,11 @@ public class WPAPP {
     }
 
     public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch (ClassNotFoundException | UnsupportedLookAndFeelException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
         try {
             startUI = new StartUI();
         }catch (FileNotFoundException ex) {

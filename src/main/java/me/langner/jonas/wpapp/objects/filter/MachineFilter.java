@@ -3,6 +3,7 @@ package me.langner.jonas.wpapp.objects.filter;
 import me.langner.jonas.wpapp.objects.StaffEntry;
 import me.langner.jonas.wpapp.objects.factory.Machine;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,7 +28,39 @@ public class MachineFilter extends StaffEntryFilter {
         return machineList.contains(entry.getMachine());
     }
 
+    public void setMachines(List<Machine> machineList) {
+        this.machineList = machineList;
+    }
+
     public List<Machine> getMachines() {
-        return machineList;
+        return Collections.unmodifiableList(machineList);
+    }
+
+    @Override
+    public String getLongDescription() {
+        if (machineList.isEmpty()) {
+            return "Keine Maschine";
+        }
+
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < machineList.size(); i++) {
+            builder.append("\n- ");
+            builder.append(machineList.get(i).getName());
+        }
+
+        return "Maschinen: " + builder.toString();
+    }
+
+    @Override
+    public String getShortDescription() {
+        if (machineList.isEmpty()) {
+            return "Keine Maschine";
+        }
+        if (machineList.size() <= 1) {
+            return "Eine Maschine";
+        }
+
+        return machineList.size() + " Maschinen";
     }
 }

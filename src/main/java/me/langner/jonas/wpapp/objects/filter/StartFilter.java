@@ -15,7 +15,7 @@ import java.util.Date;
  */
 public class StartFilter extends StaffEntryFilter {
 
-    private final Date start;
+    private Date start;
 
     public StartFilter(final Date start) {
         super();
@@ -29,7 +29,21 @@ public class StartFilter extends StaffEntryFilter {
         return start == null || start.before(entry.getDate()) || start.equals(entry.getDate());
     }
 
+    public void setStart(Date start) {
+        this.start = start;
+    }
+
     public Date getStart() {
         return start;
+    }
+
+    @Override
+    public String getLongDescription() {
+        return "Startdatum: " + WPAPP.DISPLAY_FORMAT.format(getStart());
+    }
+
+    @Override
+    public String getShortDescription() {
+        return getLongDescription();
     }
 }

@@ -15,7 +15,7 @@ import java.util.Date;
  */
 public class EndFilter extends StaffEntryFilter {
 
-    private final Date end;
+    private Date end;
 
     public EndFilter(Date end) {
         super();
@@ -28,7 +28,21 @@ public class EndFilter extends StaffEntryFilter {
         return end == null || end.after(entry.getDate()) || end.equals(entry.getDate());
     }
 
+    public void setEnd(Date end) {
+        this.end = end;
+    }
+
     public Date getEnd() {
         return end;
+    }
+
+    @Override
+    public String getLongDescription() {
+        return "Enddatum: " + WPAPP.DISPLAY_FORMAT.format(getEnd());
+    }
+
+    @Override
+    public String getShortDescription() {
+        return getLongDescription();
     }
 }

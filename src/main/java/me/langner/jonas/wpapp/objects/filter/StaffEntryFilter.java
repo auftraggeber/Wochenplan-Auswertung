@@ -1,5 +1,6 @@
 package me.langner.jonas.wpapp.objects.filter;
 
+import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.StaffEntry;
 
 import java.io.Serializable;
@@ -32,10 +33,22 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
             public boolean staffEntryGetsAccepted(StaffEntry entry) {
                 return true;
             }
+
+            @Override
+            public String getLongDescription() {
+                return "Basis: Alle Einträge";
+            }
+
+            @Override
+            public String getShortDescription() {
+                return getLongDescription();
+            }
         };
+        WPAPP.getWochenplan().clearFilterPeriod();
     }
 
     private StaffEntryFilter decorated;
+    private String name;
 
     /**
      * Registriert einen neuen Filter.
@@ -51,6 +64,7 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
      */
     protected StaffEntryFilter(StaffEntryFilter decorated) {
         this.decorated = decorated;
+        this.name = decorated != null ? decorated.name : UUID.randomUUID().toString();
         String dec = decorated == null ? "null" : decorated.getClass().getSimpleName();
         System.out.println("Registered new filter: " + this.getClass().getSimpleName() + " decorating " + dec);
         active = this;
@@ -108,6 +122,15 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
     }
 
     /**
+     * Diese Methode wird von den {@link javax.swing.ListCellRenderer<StaffEntryFilter>} genutzt.
+     * @return Gibt die kurze Beschreibung des Filters aus.
+     */
+    @Override
+    public String toString() {
+        return getShortDescription();
+    }
+
+    /**
      * Ermittelt den erstbesten Filter aus einem Filterstack.
      * @param clazz Die Klasse des gesuchten Filters.
      * @param <T> Der Typ des Filters.
@@ -123,9 +146,19 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
         return null;
     }
 
+    public Vector<StaffEntryFilter> getFilterStack() {
+        Vector<StaffEntryFilter> filters = getDecorated() != null ? getDecorated().getFilterStack() : new Vector<>();
+
+        filters.add(0, this);
+        return filters;
+    }
+
     public int getFilterStackSize() {
-        final int currentSize = (getDecorated() == null) ? 0 : getDecorated().getFilterStackSize();
-        return currentSize + 1;
+        return getFilterStack().size();
+    }
+
+    public String getName() {
+        return name;
     }
 
     protected StaffEntryFilter getDecorated() {

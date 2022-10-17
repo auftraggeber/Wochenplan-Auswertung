@@ -17,4 +17,13 @@ public interface IStaffEntryFilter {
      */
     boolean staffEntryGetsAccepted(StaffEntry entry);
 
+    /**
+     * @return Eine lange Beschreibung des Filters.
+     */
+    String getLongDescription();
+
+    /**
+     * @return Eine kurze Beschreibung des Filters.
+     */
+    String getShortDescription();
 }

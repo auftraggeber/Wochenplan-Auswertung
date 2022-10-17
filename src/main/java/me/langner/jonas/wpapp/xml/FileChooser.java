@@ -24,7 +24,6 @@ public class FileChooser {
     private File[] files;
 
     public FileChooser() {
-        System.out.println(getStartLocation());
         jFileChooser = new JFileChooser(getStartLocation());
         jFileChooser.setMultiSelectionEnabled(true);
         addFilter();

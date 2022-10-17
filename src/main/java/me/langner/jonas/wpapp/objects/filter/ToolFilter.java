@@ -3,6 +3,7 @@ package me.langner.jonas.wpapp.objects.filter;
 import me.langner.jonas.wpapp.objects.StaffEntry;
 import me.langner.jonas.wpapp.objects.factory.Tool;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -26,7 +27,39 @@ public class ToolFilter extends StaffEntryFilter {
         return toolList.contains(entry.getTool());
     }
 
+    public void setTools(List<Tool> toolList) {
+        this.toolList = toolList;
+    }
+
     public List<Tool> getTools() {
-        return toolList;
+        return Collections.unmodifiableList(toolList);
+    }
+
+    @Override
+    public String getLongDescription() {
+        if (toolList.isEmpty()) {
+            return "Kein Werkzeug";
+        }
+
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < toolList.size(); i++) {
+            builder.append("\n- ");
+            builder.append(toolList.get(i).getName());
+        }
+
+        return "Werkzeuge: " + builder.toString();
+    }
+
+    @Override
+    public String getShortDescription() {
+        if (toolList.isEmpty()) {
+            return "Kein Werkzeug";
+        }
+        if (toolList.size() <= 1) {
+            return "Ein Werkzeug";
+        }
+
+        return toolList.size() + " Werkzeuge";
     }
 }

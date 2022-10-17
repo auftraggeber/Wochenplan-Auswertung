@@ -6,6 +6,7 @@ import me.langner.jonas.wpapp.objects.factory.Machine;
 import me.langner.jonas.wpapp.objects.StaffEntry;
 import me.langner.jonas.wpapp.objects.factory.Tool;
 import me.langner.jonas.wpapp.objects.Wochenplan;
+import me.langner.jonas.wpapp.objects.ui.frames.filter.FilterUI;
 import me.langner.jonas.wpapp.xml.WochenplanFileReader;
 
 import javax.swing.*;
