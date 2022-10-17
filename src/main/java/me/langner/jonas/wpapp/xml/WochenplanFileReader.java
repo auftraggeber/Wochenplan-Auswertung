@@ -105,12 +105,12 @@ public class WochenplanFileReader {
                     Date endDate = WPAPP.SQL_FORMAT.parse(end.getTextContent());
 
                     /* überprüfen, ob nicht schon ein anderes Datum */
-                    if (WPAPP.getWochenplan().getFilterPeriod() != null && WPAPP.getWochenplan().getFilterPeriod().getStart().before(startDate))
-                        startDate = WPAPP.getWochenplan().getFilterPeriod().getStart();
+                    if (WPAPP.getWochenplan().getPeriod() != null && WPAPP.getWochenplan().getPeriod().getStart().before(startDate))
+                        startDate = WPAPP.getWochenplan().getPeriod().getStart();
 
                     /* gleiche für Ende */
-                    if (WPAPP.getWochenplan().getFilterPeriod() != null && WPAPP.getWochenplan().getFilterPeriod().getEnd().after(endDate))
-                        endDate = WPAPP.getWochenplan().getFilterPeriod().getEnd();
+                    if (WPAPP.getWochenplan().getPeriod() != null && WPAPP.getWochenplan().getPeriod().getEnd().after(endDate))
+                        endDate = WPAPP.getWochenplan().getPeriod().getEnd();
 
                     /* ZeitPeriode speichern */
                     Period period = new Period(startDate, endDate);

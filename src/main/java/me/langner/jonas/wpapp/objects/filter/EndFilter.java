@@ -30,6 +30,7 @@ public class EndFilter extends StaffEntryFilter {
 
     public void setEnd(Date end) {
         this.end = end;
+        WPAPP.getWochenplan().clearFilterPeriod();
     }
 
     public Date getEnd() {

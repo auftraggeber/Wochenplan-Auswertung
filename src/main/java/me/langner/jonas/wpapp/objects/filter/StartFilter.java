@@ -31,6 +31,7 @@ public class StartFilter extends StaffEntryFilter {
 
     public void setStart(Date start) {
         this.start = start;
+        WPAPP.getWochenplan().clearFilterPeriod();
     }
 
     public Date getStart() {
