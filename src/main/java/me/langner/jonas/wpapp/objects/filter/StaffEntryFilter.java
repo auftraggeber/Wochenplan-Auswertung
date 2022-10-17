@@ -1,6 +1,5 @@
 package me.langner.jonas.wpapp.objects.filter;
 
-import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.StaffEntry;
 
 import java.io.Serializable;
@@ -63,6 +62,9 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
      * @return Gibt an, ob der Filter diesen Eintrag erlaubt oder, ob dieser Eintrag vom Filter verworfen werden soll.
      */
     public boolean filter(StaffEntry entry) {
+        if (entry == null)
+            return false;
+
         return (decorated == null || decorated.filter(entry)) && this.staffEntryGetsAccepted(entry);
     }
 
@@ -105,6 +107,12 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
         return Collections.unmodifiableList(filtered);
     }
 
+    /**
+     * Ermittelt den erstbesten Filter aus einem Filterstack.
+     * @param clazz Die Klasse des gesuchten Filters.
+     * @param <T> Der Typ des Filters.
+     * @return Gibt das Filterobjekt, welches im aktuellen Filterstack liegt, an oder null, wenn kein Filter gefunden werden konnte.
+     */
     public <T extends StaffEntryFilter> T getFirstFilterOfType(Class<T> clazz) {
         if (this.getClass().equals(clazz))
             return (T) this;
@@ -113,6 +121,11 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
             return decorated.getFirstFilterOfType(clazz);
 
         return null;
+    }
+
+    public int getFilterStackSize() {
+        final int currentSize = (getDecorated() == null) ? 0 : getDecorated().getFilterStackSize();
+        return currentSize + 1;
     }
 
     protected StaffEntryFilter getDecorated() {

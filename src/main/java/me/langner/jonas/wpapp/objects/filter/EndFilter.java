@@ -5,6 +5,14 @@ import me.langner.jonas.wpapp.objects.StaffEntry;
 
 import java.util.Date;
 
+/**
+ * Ein Filter, der nach dem Enddatum filtert. Funktioniert ähnlich wie {@link StartFilter}.
+ * Nur Einträge, dessen Datum vor dem im Filter angegebenen Enddatum liegt, passieren den
+ * Filter.
+ * @author Jonas Langner
+ * @version 0.1.0
+ * @since 14.10.22
+ */
 public class EndFilter extends StaffEntryFilter {
 
     private final Date end;
