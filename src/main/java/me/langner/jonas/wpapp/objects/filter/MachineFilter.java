@@ -84,27 +84,17 @@ public class MachineFilter extends StaffEntryFilter {
         if (lastCheck != null && lastCheck.equals(getFilterStack()))
             return filteredMachines;
 
-        StaffEntryFilter next = this;
-
-        do {
-            next = next.getDecorated();
-        }
-        while (next != null && !(next instanceof MachineFilter));
-
-        if (next == null) {
-            lastCheck = getFilterStack();
-            filteredMachines = new ArrayList<>(getMachines());
-            return filteredMachines;
-        }
+        StaffEntryFilter next = getNextFilterOfType(MachineFilter.class);
 
         filteredMachines = new ArrayList<>();
-
-        for (Machine machine : ((MachineFilter)next).getFilteredMachines()) {
-            if (machineList.contains(machine))
-                filteredMachines.add(machine);
-        }
-
         lastCheck = getFilterStack();
+
+        if (next != null) {
+            for (Machine machine : ((MachineFilter) next).getFilteredMachines()) {
+                if (machineList.contains(machine))
+                    filteredMachines.add(machine);
+            }
+        } else filteredMachines = getMachines();
 
         return filteredMachines;
     }

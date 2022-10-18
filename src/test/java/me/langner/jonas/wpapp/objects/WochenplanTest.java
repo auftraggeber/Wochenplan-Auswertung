@@ -72,10 +72,10 @@ class WochenplanTest {
         Tool tool = new Tool(1, "Testtool", 120);
         final int c = toolAddedCount;
 
-        assertTrue(wochenplan.getTools().isEmpty());
+        assertTrue(wochenplan.getFilteredTools().isEmpty());
         wochenplan.addTool(tool);
-        assertEquals(1, wochenplan.getTools().size());
-        assertEquals(tool, wochenplan.getTools().stream().findFirst().get());
+        assertEquals(1, wochenplan.getFilteredTools().size());
+        assertEquals(tool, wochenplan.getFilteredTools().stream().findFirst().get());
         assertNull(wochenplan.getToolById(0));
         assertNull(wochenplan.getToolByName("TESTTOOL"));
         assertEquals(tool, wochenplan.getToolById(1));
@@ -103,11 +103,11 @@ class WochenplanTest {
         Tool notAddedTool = new Tool(2, "Testtool2", 180);
         final int c = toolRemovedCount;
 
-        assertEquals(1, wochenplan.getTools().size());
+        assertEquals(1, wochenplan.getFilteredTools().size());
         wochenplan.removeTool(notAddedTool);
-        assertEquals(1, wochenplan.getTools().size());
+        assertEquals(1, wochenplan.getFilteredTools().size());
         wochenplan.removeTool(tool);
-        assertEquals(0, wochenplan.getTools().size());
+        assertEquals(0, wochenplan.getFilteredTools().size());
         assertEquals(c+1, toolRemovedCount);
     }
 

@@ -1,7 +1,6 @@
 package me.langner.jonas.wpapp.objects.ui.frames.filter.strategy;
 
 import me.langner.jonas.wpapp.WPAPP;
-import me.langner.jonas.wpapp.objects.factory.Machine;
 import me.langner.jonas.wpapp.objects.factory.Tool;
 import me.langner.jonas.wpapp.objects.filter.ToolFilter;
 
@@ -23,7 +22,7 @@ public class ToolFilterUIStrategyImpl extends BasicFactoryElementFilterUIStrateg
      * "Noch hinzufügbar" stehen.
      */
     public ToolFilterUIStrategyImpl() {
-        super(WPAPP.getWochenplan().getTools(), new ArrayList<>());
+        super(WPAPP.getWochenplan().getAllTools(), new ArrayList<>());
     }
 
     /**

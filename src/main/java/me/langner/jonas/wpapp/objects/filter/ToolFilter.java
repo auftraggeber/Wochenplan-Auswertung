@@ -1,11 +1,13 @@
 package me.langner.jonas.wpapp.objects.filter;
 
+import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.StaffEntry;
 import me.langner.jonas.wpapp.objects.factory.Tool;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Ein Filter der {@link StaffEntry}s nach bestimmten {@link Tool}s filtert.
@@ -19,10 +21,14 @@ public class ToolFilter extends StaffEntryFilter {
     private static final long serialVersionUID = 1L;
 
     private List<Tool> toolList = new ArrayList<>();
+    private List<Tool> filteredTools = null;
+
+    private Vector<StaffEntryFilter> lastStack = null;
 
     public ToolFilter(List<Tool> toolList) {
         super();
         this.toolList.addAll(toolList);
+        WPAPP.getWochenplan().resetFilteredTools();
     }
 
     @Override
@@ -32,6 +38,7 @@ public class ToolFilter extends StaffEntryFilter {
 
     public void setTools(List<Tool> toolList) {
         this.toolList = toolList;
+        WPAPP.getWochenplan().resetFilteredTools();
     }
 
     public List<Tool> getTools() {
@@ -64,5 +71,24 @@ public class ToolFilter extends StaffEntryFilter {
         }
 
         return toolList.size() + " Werkzeuge";
+    }
+
+    public List<Tool> getFilteredTools() {
+        if (lastStack != null && lastStack.equals(getFilterStack()))
+            return filteredTools;
+
+        ToolFilter filter = getNextFilterOfType(ToolFilter.class);
+
+        filteredTools = new ArrayList<>();
+        lastStack = getFilterStack();
+
+        if (filter != null) {
+            for (Tool tool : filter.getFilteredTools()) {
+                if (toolList.contains(tool))
+                    filteredTools.add(tool);
+            }
+        } else filteredTools = getTools();
+
+        return filteredTools;
     }
 }

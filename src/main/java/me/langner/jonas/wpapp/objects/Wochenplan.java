@@ -1,9 +1,6 @@
 package me.langner.jonas.wpapp.objects;
 
-import me.langner.jonas.wpapp.objects.filter.EndFilter;
-import me.langner.jonas.wpapp.objects.filter.MachineFilter;
-import me.langner.jonas.wpapp.objects.filter.StaffEntryFilter;
-import me.langner.jonas.wpapp.objects.filter.StartFilter;
+import me.langner.jonas.wpapp.objects.filter.*;
 import me.langner.jonas.wpapp.objects.listener.FactoryChangeListener;
 import me.langner.jonas.wpapp.objects.factory.Machine;
 import me.langner.jonas.wpapp.objects.factory.Tool;
@@ -25,10 +22,12 @@ public class Wochenplan {
     private Set<FactoryChangeListener> listeners = new HashSet<>();
 
     private List<Machine> filteredMachines = null;
+    private List<Tool> filteredTools = null;
 
     public void resetAllFilters() {
         clearFilterPeriod();
         resetFilteredMachines();
+        resetFilteredTools();
     }
 
     public void clearFilterPeriod() {
@@ -43,6 +42,18 @@ public class Wochenplan {
 
             if (filter != null) {
                 filteredMachines = filter.getFilteredMachines();
+            }
+        }
+    }
+
+    public void resetFilteredTools() {
+        filteredTools = null;
+
+        if (StaffEntryFilter.getActive() != null) {
+            ToolFilter filter = StaffEntryFilter.getActive().getFirstFilterOfType(ToolFilter.class);
+
+            if (filter != null) {
+                filteredTools = filter.getFilteredTools();
             }
         }
     }
@@ -152,7 +163,7 @@ public class Wochenplan {
      * @return Werkzeug mit dem Namen (das erste, das es findet).
      */
     public Tool getToolByName(String name) {
-        for (Tool tool : getTools()) {
+        for (Tool tool : getFilteredTools()) {
             if (tool.getName().equals(name))
                 return tool;
         }
@@ -180,7 +191,14 @@ public class Wochenplan {
         return Collections.unmodifiableCollection(machines.values());
     }
 
-    public Collection<Tool> getTools() {
+    public Collection<Tool> getFilteredTools() {
+        if (filteredTools != null)
+            return filteredTools;
+
+        return getAllTools();
+    }
+
+    public Collection<Tool> getAllTools() {
         return Collections.unmodifiableCollection(tools.values());
     }
 

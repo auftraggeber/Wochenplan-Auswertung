@@ -200,6 +200,14 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
         return null;
     }
 
+    public <T extends StaffEntryFilter> T getNextFilterOfType(Class<T> clazz) {
+        if (decorated != null) {
+            return decorated.getFirstFilterOfType(clazz);
+        }
+
+        return null;
+    }
+
     public Vector<StaffEntryFilter> getFilterStack() {
         Vector<StaffEntryFilter> filters = getDecorated() != null ? getDecorated().getFilterStack() : new Vector<>();
 

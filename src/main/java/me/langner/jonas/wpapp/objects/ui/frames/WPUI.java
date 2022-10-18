@@ -228,7 +228,7 @@ public class WPUI extends Frame {
 
             @Override
             public void toolAdded(Tool tool) {
-                updateList(toolList, WPAPP.getWochenplan().getTools().toArray());
+                updateList(toolList, WPAPP.getWochenplan().getFilteredTools().toArray());
             }
 
             @Override
@@ -238,7 +238,7 @@ public class WPUI extends Frame {
 
             @Override
             public void toolRemoved(Tool tool) {
-                updateList(toolList, WPAPP.getWochenplan().getTools().toArray());
+                updateList(toolList, WPAPP.getWochenplan().getFilteredTools().toArray());
             }
         });
 
@@ -456,7 +456,7 @@ public class WPUI extends Frame {
 
     public void updateLists() {
         updateList(machineList, WPAPP.getWochenplan().getFilteredMachines().toArray());
-        updateList(toolList, WPAPP.getWochenplan().getTools().toArray());
+        updateList(toolList, WPAPP.getWochenplan().getFilteredTools().toArray());
     }
 
     /**
