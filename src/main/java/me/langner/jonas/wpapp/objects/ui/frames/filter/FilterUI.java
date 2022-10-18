@@ -47,7 +47,6 @@ public class FilterUI extends Frame {
     private final JButton openToolFilter = new JButton("Werkzeugfilter hinzufügen");
 
     private final JButton editButton = new JButton("Komponente bearbeiten");
-    private final JButton removeButton = new JButton("Komponente entfernen");
 
     /**
      * Baut die UI Komponenten.
@@ -86,8 +85,7 @@ public class FilterUI extends Frame {
                 openMachineFilter,
                 openToolFilter,
                 editButton,
-                useFilterButton,
-                removeButton
+                useFilterButton
         );
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -115,8 +113,7 @@ public class FilterUI extends Frame {
         openMachineFilter.setBounds(465, 155, 225, 30);
         openToolFilter.setBounds(465, 190, 225, 30);
 
-        editButton.setBounds(465, 245, 225, 30);
-        removeButton.setBounds(465, 280, 225, 30);
+        editButton.setBounds(465, 280, 225, 30);
 
         resetButton.setBounds(465, 320, 225, 40);
     }
@@ -212,21 +209,6 @@ public class FilterUI extends Frame {
             public void actionPerformed(ActionEvent e) {
                 saveName();
                 dispose();
-            }
-        });
-
-        removeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                StaffEntryFilter selectedFilter = filterStackList.getSelectedValue();
-
-                if (selectedFilter != null) {
-                    selectedFilter.removeFromCurrentStack();
-                    WPAPP.getWochenplan().resetAllFilters();
-                    WPAPP.getUI().reloadInformation();
-                    WPAPP.getUI().updateLists();
-                    reloadFilters();
-                }
             }
         });
     }

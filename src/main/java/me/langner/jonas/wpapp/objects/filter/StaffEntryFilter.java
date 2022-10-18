@@ -85,7 +85,7 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
         return false;
     }
 
-    private StaffEntryFilter decorated, parent;
+    private StaffEntryFilter decorated;
     private String name;
 
     /**
@@ -103,9 +103,8 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
     protected StaffEntryFilter(StaffEntryFilter decorated) {
         this.decorated = decorated;
         this.name = decorated != null ? decorated.name : UUID.randomUUID().toString();
-        if (decorated != null)
-            decorated.setParent(this);
-
+        String dec = decorated == null ? "null" : decorated.getClass().getSimpleName();
+        System.out.println("Registered new filter: " + this.getClass().getSimpleName() + " decorating " + dec);
         active = this;
     }
 
@@ -176,28 +175,7 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
         return false;
     }
 
-    public void removeFromCurrentStack() {
-        if (getDecorated() != null) {
-            getDecorated().setParent(getParent());
-            if (getParent() != null)
-                getParent().setDecorated(getDecorated());
-            else {
-                active = getDecorated();
-            }
-            setParent(null);
-            setDecorated(null);
-        }
-    }
-
-    private void setParent(final StaffEntryFilter parent) {
-        this.parent = parent;
-    }
-
-    private void setDecorated(final StaffEntryFilter decorated) {
-        this.decorated = decorated;
-    }
-
-    public void setName(final String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -242,10 +220,6 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
 
     protected StaffEntryFilter getDecorated() {
         return decorated;
-    }
-
-    protected StaffEntryFilter getParent() {
-        return parent;
     }
 
     /**
