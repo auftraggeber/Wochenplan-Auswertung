@@ -17,7 +17,7 @@ import java.net.URL;
 public class StartUI extends Frame {
 
     private JLabel label;
-    private static final JLabel VERSION_LABEL = new JLabel("Version " + WPAPP.VERSION + " Build " + WPAPP.BUILD);
+    private static final JLabel VERSION_LABEL = new JLabel("Version " + WPAPP.VERSION + " Build " + WPAPP.BUILD + " - " + WPAPP.SINCE);
 
     /**
      * Erstellt einen neuen Startbildschirm.

@@ -37,6 +37,9 @@ public class ToolFilter extends StaffEntryFilter {
     }
 
     public void setTools(List<Tool> toolList) {
+        if (!this.toolList.equals(toolList))
+            lastStack = null;
+
         this.toolList = toolList;
         WPAPP.getWochenplan().resetFilteredTools();
     }
