@@ -4,6 +4,7 @@ import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.StaffEntry;
 import me.langner.jonas.wpapp.objects.filter.StaffEntryFilter;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -12,33 +13,17 @@ import java.util.*;
  * @version 1.0
  * @since 1.0
  */
-public abstract class FactoryElement {
+public abstract class FactoryElement implements Serializable {
 
-    private TreeSet<StaffEntry> entries = new TreeSet<StaffEntry>((entry1, entry2) -> {
-        if (entry1.getDate().before(entry2.getDate()))
-            return -1;
-        else if (entry1.getDate().after(entry2.getDate()))
-            return 1;
+    private static final long serialVersionUID = 1L;
 
-        if (entry1.getShift() < entry2.getShift())
-            return -1;
-        else if (entry1.getShift() > entry2.getShift())
-            return 1;
-
-        if (entry1.getMachine().getId() < entry2.getMachine().getId())
-            return -1;
-        else if (entry1.getMachine().getId() > entry2.getMachine().getId())
-            return 1;
-
-        if (entry1.getTool().getId() < entry2.getTool().getId())
-            return -1;
-        else if (entry1.getTool().getId() > entry2.getTool().getId())
-            return 1;
-
-        return 0;
-    });
+    private TreeSet<StaffEntry> entries = new TreeSet<StaffEntry>(new StaffEntryComparator());
     private int id;
     private String name;
+
+    protected FactoryElement() {
+        this(-1, null);
+    }
 
     /**
      * Erstellt ein neues Element.
@@ -97,5 +82,18 @@ public abstract class FactoryElement {
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FactoryElement element = (FactoryElement) o;
+        return id == element.id && Objects.equals(name, element.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }

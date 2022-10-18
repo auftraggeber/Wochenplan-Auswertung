@@ -8,6 +8,7 @@ import me.langner.jonas.wpapp.objects.time.SelectionMonth;
 import me.langner.jonas.wpapp.objects.ui.elements.DateField;
 import me.langner.jonas.wpapp.objects.ui.frames.ErrorUI;
 import me.langner.jonas.wpapp.objects.ui.frames.Frame;
+import me.langner.jonas.wpapp.objects.ui.frames.filter.listener.OpenFilterUIOnWindowCloseListenerImpl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -94,6 +95,9 @@ public class DateFilterUI extends Frame {
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setAlwaysOnTop(true);
+
+        addWindowListener(new OpenFilterUIOnWindowCloseListenerImpl());
+
         open();
         if (startFilter != null)
             dateFields[0].setValue(startFilter.getStart());
@@ -170,8 +174,6 @@ public class DateFilterUI extends Frame {
                     WPAPP.getUI().reloadInformation();
 
                     dispose();
-                    new FilterUI();
-
 
                 } catch (ParseException parseException) {
                     parseException.printStackTrace();

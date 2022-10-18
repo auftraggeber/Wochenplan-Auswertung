@@ -3,6 +3,7 @@ package me.langner.jonas.wpapp.objects;
 import me.langner.jonas.wpapp.objects.factory.Machine;
 import me.langner.jonas.wpapp.objects.factory.Tool;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,7 +15,9 @@ import java.util.Objects;
  * @version 1.0.1
  * @since 1.0
  */
-public class StaffEntry {
+public class StaffEntry implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private static int lastJavaID = 0;
     private int javaID;

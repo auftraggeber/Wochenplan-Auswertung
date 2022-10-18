@@ -2,15 +2,23 @@ package me.langner.jonas.wpapp.objects.factory;
 
 import me.langner.jonas.wpapp.objects.factory.FactoryElement;
 
+import java.io.Serializable;
+
 /**
  * Ein Werkzeug, welche benötigt wird, um bestimmte Dinge herzustellen.
  * @author Jonas Langner
  * @version 1.0
  * @since 1.0
  */
-public class Tool extends FactoryElement {
+public class Tool extends FactoryElement implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private int preparationTime;
+
+    private Tool() {
+        super();
+    }
 
     /**
      * Erstellt ein neues Werkzeug.

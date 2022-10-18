@@ -26,6 +26,11 @@ public class Wochenplan {
 
     private List<Machine> filteredMachines = null;
 
+    public void resetAllFilters() {
+        clearFilterPeriod();
+        resetFilteredMachines();
+    }
+
     public void clearFilterPeriod() {
         filterPeriod = null;
     }

@@ -4,6 +4,8 @@ import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.factory.Machine;
 import me.langner.jonas.wpapp.objects.factory.Tool;
 import me.langner.jonas.wpapp.objects.filter.*;
+import me.langner.jonas.wpapp.objects.settings.Setting;
+import me.langner.jonas.wpapp.objects.ui.frames.ErrorUI;
 import me.langner.jonas.wpapp.objects.ui.frames.Frame;
 import me.langner.jonas.wpapp.objects.ui.frames.filter.DateFilterUI;
 import me.langner.jonas.wpapp.objects.ui.frames.filter.FactoryElementFilterUI;
@@ -30,6 +32,8 @@ public class FilterUI extends Frame {
     private final JButton saveButton = new JButton("Filter speichern");
     private final JButton loadButton = new JButton("Filter laden");
     private final JButton resetButton = new JButton("Filter zurücksetzen");
+
+    private final JButton useFilterButton = new JButton("Filter anwenden");
 
     private final JButton openDateFilter = new JButton("Datumsfilter hinzufügen");
     private final JButton openMachineFilter = new JButton("Maschinenfilter hinzufügen");
@@ -70,10 +74,11 @@ public class FilterUI extends Frame {
                 openDateFilter,
                 openMachineFilter,
                 openToolFilter,
-                editButton
+                editButton,
+                useFilterButton
         );
 
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         setResizable(false);
         setAlwaysOnTop(true);
@@ -89,11 +94,13 @@ public class FilterUI extends Frame {
         saveButton.setBounds(465, 5, 225, 30);
         loadButton.setBounds(465, 40, 225, 30);
 
-        openDateFilter.setBounds(465, 80, 225, 30);
-        openMachineFilter.setBounds(465, 115, 225, 30);
-        openToolFilter.setBounds(465, 150, 225, 30);
+        useFilterButton.setBounds(465, 80, 225, 30);
 
-        editButton.setBounds(465, 190, 225, 30);
+        openDateFilter.setBounds(465, 170, 225, 30);
+        openMachineFilter.setBounds(465, 205, 225, 30);
+        openToolFilter.setBounds(465, 240, 225, 30);
+
+        editButton.setBounds(465, 280, 225, 30);
 
         resetButton.setBounds(465, 320, 225, 40);
     }
@@ -103,7 +110,20 @@ public class FilterUI extends Frame {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (StaffEntryFilter.getActive().persist()) {
+                    dispose();
+                }
+                else {
+                    new ErrorUI("Es gab einen Fehler beim Speichern.", new Exception("Der Filter konnte nicht gesichert werden. Versuchen Sie es erneut."));
+                }
+            }
+        });
 
+        loadButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new LoadFilterUI();
+                dispose();
             }
         });
 
@@ -164,6 +184,13 @@ public class FilterUI extends Frame {
                         dispose();
                     }
                 }
+            }
+        });
+
+        useFilterButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
             }
         });
     }

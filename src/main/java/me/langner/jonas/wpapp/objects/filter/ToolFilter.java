@@ -16,6 +16,8 @@ import java.util.List;
  */
 public class ToolFilter extends StaffEntryFilter {
 
+    private static final long serialVersionUID = 1L;
+
     private List<Tool> toolList = new ArrayList<>();
 
     public ToolFilter(List<Tool> toolList) {

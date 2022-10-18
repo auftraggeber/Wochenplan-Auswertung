@@ -2,7 +2,10 @@ package me.langner.jonas.wpapp.objects.filter;
 
 import me.langner.jonas.wpapp.WPAPP;
 import me.langner.jonas.wpapp.objects.StaffEntry;
+import me.langner.jonas.wpapp.objects.settings.Setting;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
@@ -17,8 +20,13 @@ import java.util.*;
  */
 public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilter {
 
+    private static final long serialVersionUID = 1L;
+
     private static StaffEntryFilter active = null;
 
+    /**
+     * @return Der aktuell aktive Filter.
+     */
     public static StaffEntryFilter getActive() {
         if (active == null) {
             reset();
@@ -27,8 +35,13 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
         return active;
     }
 
+    /**
+     * Setzt den Filter zurück.
+     * Jeder Datensatz wird wieder angezeigt.
+     */
     public static void reset() {
         active = new StaffEntryFilter(null) {
+            private static final long serialVersionUID = 1L;
             @Override
             public boolean staffEntryGetsAccepted(StaffEntry entry) {
                 return true;
@@ -44,8 +57,32 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
                 return getLongDescription();
             }
         };
-        WPAPP.getWochenplan().clearFilterPeriod();
-        WPAPP.getWochenplan().resetFilteredMachines();
+        WPAPP.getWochenplan().resetAllFilters();
+    }
+
+    /**
+     * Aktualisiert den aktuellen Filter.
+     * Dabei wird ein Filter aus den Filterdateien geladen.
+     * @param fileName Der Name des Filters und somit der Datei, in der der Filter abgespeichert wurde.
+     * @return Gibt an, ob der Filter geladen wurde.
+     */
+    public static boolean loadFilterFromFile(final String fileName) {
+        Setting setting = Setting.getFilterLocation(fileName);
+
+        if (setting != null) {
+            try {
+                Object o = setting.getObject();
+
+                if (o instanceof StaffEntryFilter) {
+                    reset();
+                    active = (StaffEntryFilter) o;
+                    WPAPP.getWochenplan().resetAllFilters();
+                }
+            }
+            catch (FileNotFoundException ignored) {}
+        }
+
+        return false;
     }
 
     private StaffEntryFilter decorated;
@@ -120,6 +157,22 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
         }
 
         return Collections.unmodifiableList(filtered);
+    }
+
+    /**
+     * Sichert den Filter in einer Datei.
+     * Verwendet dafür {@link Setting#getFilterLocation(String)}, um die Datei zu bestimmen.
+     * @return Gibt an, ob das Speichern problemlos beendet werden konnte.
+     */
+    public boolean persist() {
+        Setting setting = Setting.getFilterLocation(this);
+        try {
+            setting.set(this);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     /**

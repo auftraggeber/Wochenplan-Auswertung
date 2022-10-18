@@ -1,19 +1,21 @@
 package me.langner.jonas.wpapp.objects.settings;
 
-import java.io.*;
+import me.langner.jonas.wpapp.objects.filter.StaffEntryFilter;
 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * Eine Klasse, die bestimmte Einstellungen persistiert.
+ * @author Jonas Langner
+ * @version 0.1.0
+ * @since 14.10.22
+ */
 public class Setting {
 
-    public enum Type {
-        LAST_FILE_CHOOSER_LOCATION("lfcl.set");
-
-        private final String[] fileNames;
-
-        Type(String ... fileNames) {
-            this.fileNames = fileNames;
-        }
-    }
-
+    private static final String FILTER_DIR = "flt";
     private static final String FILE_SEPARATOR = System.getProperty("file.separator");
 
     private static File settingsDir = null;
@@ -33,6 +35,61 @@ public class Setting {
         }
     }
 
+    /**
+     * Ermittelt den Speicherort für einen Filter
+     * @param filterName Der Name des Filters.
+     * @return Der Ort, an dem der Filter gespeichert werden kann.
+     */
+    public static Setting getFilterLocation(final String filterName) {
+        try {
+            return new Setting(FILTER_DIR, filterName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * Gibt den Speicherort für einen Filter aus.
+     * @param filter Der Filter, der abgespeichert werden soll.
+     * @return Der Speicherort des Filters.
+     */
+    public static Setting getFilterLocation(final StaffEntryFilter filter) {
+        return getFilterLocation(filter.getName());
+    }
+
+    /**
+     * Ermittelt die Namen aller persistierten Filter.
+     * @return Eine Liste mit allen Filternamen.
+     */
+    public static List<String> getPersistedFilterNames() {
+        List<String> names = new ArrayList<>();
+
+        File root = getSettingsDir();
+
+        if (root != null && root.exists() && root.isDirectory()) {
+            File filterDir = new File(root.getAbsolutePath() + FILE_SEPARATOR + FILTER_DIR);
+
+            if (filterDir.exists() && filterDir.isDirectory()) {
+                try{
+                    for (File file : Objects.requireNonNull(filterDir.listFiles())) {
+                        if (file.exists() && !file.isDirectory()) {
+                            names.add(file.getName());
+                        }
+                    }
+                }
+                catch (NullPointerException ignored) {}
+            }
+        }
+
+        return names;
+    }
+
+    /**
+     * Ermittelt den generellen Ordner, in dem die Sicherungsdateien abgelegt werden können.
+     * @return Der Ordner, in dem die Dateien abgelegt werden können.
+     */
     private static File getSettingsDir() {
         if (settingsDir != null && settingsDir.exists() && settingsDir.isDirectory())
             return settingsDir;
@@ -48,6 +105,19 @@ public class Setting {
         }
 
         return settingsDir;
+    }
+
+    /**
+     * Hält die verschiedenen Einstellungstypen sowie die Pfade der Sicherungsdateien.
+     */
+    public enum Type {
+        LAST_FILE_CHOOSER_LOCATION("lfcl.set");
+
+        private final String[] fileNames;
+
+        Type(String ... fileNames) {
+            this.fileNames = fileNames;
+        }
     }
 
     private File file;
@@ -77,7 +147,7 @@ public class Setting {
             path += FILE_SEPARATOR + fileNames[i];
             final File file = new File(path);
             if (mkDir) {
-                if (!file.mkdirs()) {
+                if (!file.exists() && !file.isDirectory() && !file.mkdirs()) {
                     throw new IllegalStateException("Could not create dir: " + path);
                 }
             }
@@ -91,6 +161,11 @@ public class Setting {
         }
     }
 
+    /**
+     * Speichert einen Wert in der Sicherungsdatei.
+     * @param value Der Wert der abgesichert werden soll.
+     * @throws IOException Fehler, die beim Abspeichern in der Datei entstanden sind.
+     */
     public void set(String value) throws IOException {
         if (this.file == null || !this.file.exists()) {
             throw new FileNotFoundException("File was moved or modified.");
@@ -98,6 +173,19 @@ public class Setting {
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(this.file));
         writer.write(value);
+        writer.flush();
+        writer.close();
+    }
+
+    /**
+     * Speichert einen Wert in der Sicherungsdatei.
+     * @param serializable Das Objekt, welches abgesichert werden soll.
+     * @throws IOException Fehler, die beim Abspeichern in der Datei entstanden sind.
+     */
+    public void set(final Serializable serializable) throws IOException {
+        ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(this.file));
+
+        writer.writeObject(serializable);
         writer.flush();
         writer.close();
     }
@@ -134,5 +222,24 @@ public class Setting {
         }
 
         throw new FileNotFoundException("File was moved or modified.");
+    }
+
+    public Object getObject() throws FileNotFoundException {
+        if (file == null || !file.exists()) {
+            throw new FileNotFoundException("File was moved or modified.");
+        }
+        try {
+            ObjectInputStream stream = new ObjectInputStream(new FileInputStream(this.file));
+            Object object = stream.readObject();
+            stream.close();
+
+            return object;
+        }
+        catch (IOException | ClassNotFoundException exception) {
+            exception.printStackTrace();
+        }
+
+
+        return null;
     }
 }

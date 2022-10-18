@@ -19,6 +19,8 @@ import java.util.Vector;
  */
 public class MachineFilter extends StaffEntryFilter {
 
+    private static final long serialVersionUID = 1L;
+
     private List<Machine> machineList = new ArrayList<>();
     private List<Machine> filteredMachines = null;
 

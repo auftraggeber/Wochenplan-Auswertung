@@ -8,12 +8,11 @@ import me.langner.jonas.wpapp.objects.filter.MachineFilter;
 import me.langner.jonas.wpapp.objects.filter.StaffEntryFilter;
 import me.langner.jonas.wpapp.objects.filter.ToolFilter;
 import me.langner.jonas.wpapp.objects.ui.frames.Frame;
+import me.langner.jonas.wpapp.objects.ui.frames.filter.listener.OpenFilterUIOnWindowCloseListenerImpl;
 import me.langner.jonas.wpapp.objects.ui.frames.filter.strategy.IFactoryElementFilterUIStrategy;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -71,6 +70,9 @@ public class FactoryElementFilterUI extends Frame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setAlwaysOnTop(true);
         setResizable(false);
+
+        addWindowListener(new OpenFilterUIOnWindowCloseListenerImpl());
+
         open();
     }
 
@@ -109,7 +111,6 @@ public class FactoryElementFilterUI extends Frame {
                 WPAPP.getUI().updateLists();
                 WPAPP.getUI().reloadInformation();
                 dispose();
-                new FilterUI();
             }
         });
     }

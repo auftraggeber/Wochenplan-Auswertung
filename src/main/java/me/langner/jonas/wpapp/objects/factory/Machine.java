@@ -1,5 +1,6 @@
 package me.langner.jonas.wpapp.objects.factory;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -8,9 +9,15 @@ import java.util.*;
  * @version 1.0
  * @since 1.0
  */
-public class Machine extends FactoryElement {
+public class Machine extends FactoryElement implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private List<Tool> tools = new ArrayList<>();
+
+    private Machine() {
+        super();
+    }
 
     /**
      * Erstellt eine neue Maschine.

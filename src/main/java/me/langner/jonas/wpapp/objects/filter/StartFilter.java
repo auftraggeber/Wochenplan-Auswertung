@@ -15,6 +15,8 @@ import java.util.Date;
  */
 public class StartFilter extends StaffEntryFilter {
 
+    private static final long serialVersionUID = 1L;
+
     private Date start;
 
     public StartFilter(final Date start) {
