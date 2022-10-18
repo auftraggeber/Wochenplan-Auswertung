@@ -27,10 +27,11 @@ public class LoadFilterUI extends Frame {
     public LoadFilterUI() {
         super("Filter laden", 600, 400);
 
-        filterNameList.setBounds(5,5,590,300);
-        button.setBounds(5, 305, 590, 30);
+        JScrollPane scrollPane = new JScrollPane(filterNameList);
+        scrollPane.setBounds(5,5,590,300);
+        button.setBounds(5, 310, 590, 50);
 
-        addToPanel(filterNameList, button);
+        addToPanel(scrollPane, button);
 
         setResizable(false);
         setAlwaysOnTop(true);

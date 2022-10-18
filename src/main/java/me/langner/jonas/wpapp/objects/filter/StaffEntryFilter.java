@@ -175,13 +175,8 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
         return false;
     }
 
-    /**
-     * Diese Methode wird von den {@link javax.swing.ListCellRenderer<StaffEntryFilter>} genutzt.
-     * @return Gibt die kurze Beschreibung des Filters aus.
-     */
-    @Override
-    public String toString() {
-        return getShortDescription();
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -225,5 +220,14 @@ public abstract class StaffEntryFilter implements Serializable, IStaffEntryFilte
 
     protected StaffEntryFilter getDecorated() {
         return decorated;
+    }
+
+    /**
+     * Diese Methode wird von den {@link javax.swing.ListCellRenderer<StaffEntryFilter>} genutzt.
+     * @return Gibt die kurze Beschreibung des Filters aus.
+     */
+    @Override
+    public String toString() {
+        return getShortDescription();
     }
 }

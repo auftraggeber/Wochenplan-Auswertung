@@ -19,13 +19,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 public class FilterUI extends Frame {
 
     private final JList<StaffEntryFilter> filterStackList = new JList<>();
     private final JScrollPane scrollPane = new JScrollPane(filterStackList);
 
-    private final JLabel filterTitleLabel = new JLabel("", JLabel.CENTER);
+    private final JTextField filterTitleTextField = new JTextField();
     private final JTextPane filterDescriptionPane = new JTextPane();
     private Vector<StaffEntryFilter> data = null;
 
@@ -42,10 +43,10 @@ public class FilterUI extends Frame {
     private final JButton editButton = new JButton("Komponente bearbeiten");
 
     public FilterUI() {
-        super("Filter", 700, 400);
+        super("Filter", 700, 450);
         setLayout(null);
 
-        filterTitleLabel.setFont(filterTitleLabel.getFont().deriveFont(20F));
+        filterTitleTextField.setFont(filterTitleTextField.getFont().deriveFont(20F));
 
         filterDescriptionPane.setEditable(false);
 
@@ -66,7 +67,7 @@ public class FilterUI extends Frame {
 
         addToPanel(
                 scrollPane,
-                filterTitleLabel,
+                filterTitleTextField,
                 filterDescriptionPane,
                 saveButton,
                 loadButton,
@@ -86,19 +87,19 @@ public class FilterUI extends Frame {
     }
 
     private void setBounds() {
-        filterTitleLabel.setBounds(5, 5, 450, 50);
-        scrollPane.setBounds(5, 60, 240, 300);
+        filterTitleTextField.setBounds(5, 10, 450, 40);
+        scrollPane.setBounds(5, 60, 240, 303);
         filterDescriptionPane.setBounds(255, 60, 200, 300);
 
 
         saveButton.setBounds(465, 5, 225, 30);
         loadButton.setBounds(465, 40, 225, 30);
 
-        useFilterButton.setBounds(465, 80, 225, 30);
+        useFilterButton.setBounds(5, 365, 685, 50);
 
-        openDateFilter.setBounds(465, 170, 225, 30);
-        openMachineFilter.setBounds(465, 205, 225, 30);
-        openToolFilter.setBounds(465, 240, 225, 30);
+        openDateFilter.setBounds(465, 120, 225, 30);
+        openMachineFilter.setBounds(465, 155, 225, 30);
+        openToolFilter.setBounds(465, 190, 225, 30);
 
         editButton.setBounds(465, 280, 225, 30);
 
@@ -110,6 +111,7 @@ public class FilterUI extends Frame {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                saveName();
                 if (StaffEntryFilter.getActive().persist()) {
                     dispose();
                 }
@@ -190,13 +192,14 @@ public class FilterUI extends Frame {
         useFilterButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                saveName();
                 dispose();
             }
         });
     }
 
     private void reloadFilters() {
-        filterTitleLabel.setText(StaffEntryFilter.getActive().getName());
+        filterTitleTextField.setText(StaffEntryFilter.getActive().getName());
         data = StaffEntryFilter.getActive().getFilterStack();
 
         filterStackList.setListData(data);
@@ -210,6 +213,17 @@ public class FilterUI extends Frame {
         openDateFilter.setEnabled(StaffEntryFilter.getActive().getFirstFilterOfType(StartFilter.class) == null && StaffEntryFilter.getActive().getFirstFilterOfType(EndFilter.class) == null);
         openMachineFilter.setEnabled(StaffEntryFilter.getActive().getFirstFilterOfType(MachineFilter.class) == null);
         openToolFilter.setEnabled(StaffEntryFilter.getActive().getFirstFilterOfType(ToolFilter.class) == null);
+    }
+
+    /**
+     * Sichert den Namen des Filters, wenn ein Buchstabe oder eine Zahl im Textfeld eingegeben wurde.
+     */
+    private void saveName() {
+        String name = filterTitleTextField.getText();
+
+        if (!name.replaceAll("[^\\w]+", "").isEmpty()) {
+            StaffEntryFilter.getActive().setName(name);
+        }
     }
 
     @Override
