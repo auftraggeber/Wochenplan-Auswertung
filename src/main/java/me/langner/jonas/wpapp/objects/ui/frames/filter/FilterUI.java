@@ -21,6 +21,12 @@ import java.awt.event.ComponentEvent;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
+/**
+ * UI, dass den aktuellen Filter anzeigt sowie die Aktionen, um diesen zu modifizieren.
+ * @author Jonas Langner
+ * @version 0.1.0
+ * @since 17.10.22
+ */
 public class FilterUI extends Frame {
 
     private final JList<StaffEntryFilter> filterStackList = new JList<>();
@@ -42,6 +48,9 @@ public class FilterUI extends Frame {
 
     private final JButton editButton = new JButton("Komponente bearbeiten");
 
+    /**
+     * Baut die UI Komponenten.
+     */
     public FilterUI() {
         super("Filter", 700, 450);
         setLayout(null);
@@ -86,6 +95,9 @@ public class FilterUI extends Frame {
         open();
     }
 
+    /**
+     * Setzt die Komponenten an die richtigen Stellen.
+     */
     private void setBounds() {
         filterTitleTextField.setBounds(5, 10, 450, 40);
         scrollPane.setBounds(5, 60, 240, 303);
@@ -106,6 +118,9 @@ public class FilterUI extends Frame {
         resetButton.setBounds(465, 320, 225, 40);
     }
 
+    /**
+     * Gibt den verschiedenen Buttons ihr verhalten.
+     */
     private void initButtons() {
         final Frame frame = this;
         saveButton.addActionListener(new ActionListener() {
@@ -198,6 +213,9 @@ public class FilterUI extends Frame {
         });
     }
 
+    /**
+     * Lädt alle Filter neu und aktualisiert die Anzeige für den aktuellen Filter.
+     */
     private void reloadFilters() {
         filterTitleTextField.setText(StaffEntryFilter.getActive().getName());
         data = StaffEntryFilter.getActive().getFilterStack();
