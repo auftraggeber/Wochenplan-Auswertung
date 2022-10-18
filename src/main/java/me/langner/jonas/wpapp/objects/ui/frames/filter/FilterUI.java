@@ -222,7 +222,7 @@ public class FilterUI extends Frame {
         String name = filterTitleTextField.getText();
 
         if (!name.replaceAll("[^\\w]+", "").isEmpty()) {
-            StaffEntryFilter.getActive().setName(name);
+            StaffEntryFilter.getActive().setName(name.replaceAll("[^\\w\\s-]+", ""));
         }
     }
 
