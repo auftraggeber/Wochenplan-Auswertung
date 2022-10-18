@@ -1,6 +1,7 @@
 package me.langner.jonas.wpapp.objects.ui.frames;
 
 import me.langner.jonas.wpapp.WPAPP;
+import me.langner.jonas.wpapp.objects.filter.StaffEntryFilter;
 import me.langner.jonas.wpapp.objects.listener.FactoryChangeListener;
 import me.langner.jonas.wpapp.objects.factory.Machine;
 import me.langner.jonas.wpapp.objects.StaffEntry;
@@ -43,39 +44,42 @@ public class WPUI extends Frame {
     private List<StaffEntry> lastEntries;
     private boolean autoChanged = false;
 
-    private JLabel machineTitle = new JLabel("Maschinen", JLabel.CENTER);
-    private JLabel toolTitle = new JLabel("Werkzeuge", JLabel.CENTER);
-    private JLabel informationTitle = new JLabel("Informationen", JLabel.CENTER);
+    private final JLabel machineTitle = new JLabel("Maschinen", JLabel.CENTER);
+    private final JLabel toolTitle = new JLabel("Werkzeuge", JLabel.CENTER);
+    private final JLabel informationTitle = new JLabel("Informationen", JLabel.CENTER);
 
-    private JList machineList = new JList(new String[0]);
-    private JScrollPane machineScrollPane = new JScrollPane(machineList);
+    private final JList<String> machineList = new JList<>(new String[0]);
+    private final JScrollPane machineScrollPane = new JScrollPane(machineList);
 
-    private JList toolList = new JList(new String[0]);
-    private JScrollPane toolScrollPane = new JScrollPane(toolList);
+    private final JList<String> toolList = new JList<>(new String[0]);
+    private final JScrollPane toolScrollPane = new JScrollPane(toolList);
 
-    private JPanel informationPanel = new JPanel();
-    private JLabel topInfoText = new JLabel("");
-    private JLabel sumInfoText[] = new JLabel[2];
+    private final JPanel informationPanel = new JPanel();
+    private final JLabel topInfoText = new JLabel("");
+    private final JLabel[] sumInfoText = new JLabel[2];
 
-    private JButton resetMachine = new JButton("Alles abwählen");
-    private JButton resetTool = new JButton("Alles abwählen");
+    private final JButton resetMachine = new JButton("Alles abwählen");
+    private final JButton resetTool = new JButton("Alles abwählen");
 
-    private JTable table = new JTable(new Object[0][] , tableHeaders);
-    private JScrollPane tableScrollPane = new JScrollPane(table);
-    private JPanel tablePanel = new JPanel();
+    private final JTable table = new JTable(new Object[0][] , tableHeaders);
+    private final JScrollPane tableScrollPane = new JScrollPane(table);
+    private final JPanel tablePanel = new JPanel();
 
-    private JCheckBox onlyWithData = new JCheckBox("Nullwerte ausblenden");
+    private final JCheckBox onlyWithData = new JCheckBox("Nullwerte ausblenden");
 
-    private JButton moreData = new JButton("Weitere Datei einbinden");
+    private final JButton moreData = new JButton("Weitere Datei einbinden");
 
-    private JLabel selectedSumLabel[] = new JLabel[2];
-    private JPanel selectedSumPanel = new JPanel();
+    private final JLabel[] selectedSumLabel = new JLabel[2];
+    private final JPanel selectedSumPanel = new JPanel();
 
-    private Menu menu = new Menu("Aktionen");
-    private MenuItem menuItem = new MenuItem("Zurücksetzen");
-    private MenuItem menuItemMonthSelect = new MenuItem("Filter anzeigen");
+    private final Menu menu = new Menu("Aktionen");
+    private final MenuItem menuItem = new MenuItem("Zurücksetzen");
+    private final MenuItem menuItemMonthSelect = new MenuItem("Filter anzeigen");
+
+    private final JLabel loadingLabel = new JLabel("Lädt Daten. Bitte warten Sie einen Moment...", JLabel.CENTER);
 
     private Runnable reloadRunnable;
+    private Thread currentLoadingThread;
 
     public WPUI() {
         super("WPAPP Auswertung - Version " + WPAPP.VERSION, 1500, 1300);
@@ -112,6 +116,8 @@ public class WPUI extends Frame {
 
         onlyWithData.setSelected(true);
 
+        tablePanel.add(loadingLabel);
+
         buildMenu();
         addInformationElements();
         setBounds();
@@ -137,6 +143,8 @@ public class WPUI extends Frame {
 
         /* Datei auswählen */
         new WochenplanFileReader();
+
+        hideLoading();
 
         open();
         /* anzeigen */
@@ -315,48 +323,6 @@ public class WPUI extends Frame {
         java.util.List<StaffEntry> entries = new ArrayList<>();
         java.util.List<Integer> newSelection = new ArrayList<>();
 
-        /* alle einträge hinzufügen */
-        selection.forEach((selectedName) -> {
-            Machine machine = WPAPP.getWochenplan().getMachineByName(selectedName);
-
-            /* alle zugehörigen Tools selektieren */
-            machine.getTools().forEach((tool) -> {
-
-                /* überprüfen, ob Tool dabei ist */
-                for (int i = 0; i < toolList.getModel().getSize(); i++) {
-                    if (toolList.getModel().getElementAt(i).equals(tool.getName())) {
-                        // Tool ist dabei - zur neuen Auswahl hinzufügen
-                        if (!newSelection.contains(i))
-                            newSelection.add(i);
-                        break;
-                    }
-                }
-            });
-
-            /* da maschine ausgewählt auch nur daten, die mit der Maschine in verbindung stehen, verwenden */
-            machine.getEntries().forEach((entry) -> {
-                if (!entries.contains(entry))
-                    entries.add(entry);
-            });
-        });
-
-        /* in array umwandeln */
-        int[] newArray = new int[newSelection.size()];
-
-        for (int i = 0; i < newSelection.size(); i++) {
-            newArray[i] = newSelection.get(i);
-        }
-
-        /* selektieren */
-        if (machineList.getSelectedIndices().length > 0) {
-            autoChanged = true;
-            toolList.setSelectedIndices(newArray);
-            autoChanged = false;
-        }
-
-        /* updaten */
-        showInformation(entries);
-
         /* für reload festlegen */
         reloadRunnable = new Runnable() {
             @Override
@@ -364,6 +330,59 @@ public class WPUI extends Frame {
                 machineSelectionChanged();
             }
         };
+
+        showLoading();
+        /* alle einträge hinzufügen */
+
+        if (currentLoadingThread != null && currentLoadingThread.isAlive()) {
+            currentLoadingThread.interrupt();
+        }
+
+        currentLoadingThread = new Thread(() -> {
+
+            selection.forEach((selectedName) -> {
+                Machine machine = WPAPP.getWochenplan().getMachineByName(selectedName);
+
+                /* alle zugehörigen Tools selektieren */
+                machine.getTools().forEach((tool) -> {
+
+                    /* überprüfen, ob Tool dabei ist */
+                    for (int i = 0; i < toolList.getModel().getSize(); i++) {
+                        if (toolList.getModel().getElementAt(i).equals(tool.getName())) {
+                            // Tool ist dabei - zur neuen Auswahl hinzufügen
+                            if (!newSelection.contains(i))
+                                newSelection.add(i);
+                            break;
+                        }
+                    }
+                });
+
+                /* da maschine ausgewählt auch nur daten, die mit der Maschine in verbindung stehen, verwenden */
+                machine.getEntries().forEach((entry) -> {
+                    if (!entries.contains(entry))
+                        entries.add(entry);
+                });
+            });
+
+            /* in array umwandeln */
+            int[] newArray = new int[newSelection.size()];
+
+            for (int i = 0; i < newSelection.size(); i++) {
+                newArray[i] = newSelection.get(i);
+            }
+
+            /* selektieren */
+            if (machineList.getSelectedIndices().length > 0) {
+                autoChanged = true;
+                toolList.setSelectedIndices(newArray);
+                autoChanged = false;
+            }
+
+            /* updaten */
+            showInformation(entries);
+        });
+
+        currentLoadingThread.start();
     }
 
     /**
@@ -373,19 +392,6 @@ public class WPUI extends Frame {
         java.util.List<String> selection = toolList.getSelectedValuesList();
         java.util.List<StaffEntry> entries = new ArrayList<>();
 
-        /* alle einträge hinzufügen */
-        selection.forEach((selectedName) -> {
-            Tool tool = WPAPP.getWochenplan().getToolByName(selectedName);
-
-            tool.getEntries().forEach((entry) -> {
-                if (!entries.contains(entry))
-                    entries.add(entry);
-            });
-        });
-
-        /* updaten */
-        showInformation(entries);
-
         /* für reload festlegen */
         reloadRunnable = new Runnable() {
             @Override
@@ -393,6 +399,29 @@ public class WPUI extends Frame {
                 toolSelectionChanged();
             }
         };
+
+        showLoading();
+
+        if (currentLoadingThread != null && currentLoadingThread.isAlive()) {
+            currentLoadingThread.interrupt();
+        }
+
+        currentLoadingThread = new Thread(() -> {
+            /* alle einträge hinzufügen */
+            selection.forEach((selectedName) -> {
+                Tool tool = WPAPP.getWochenplan().getToolByName(selectedName);
+
+                tool.getEntries().forEach((entry) -> {
+                    if (!entries.contains(entry))
+                        entries.add(entry);
+                });
+            });
+
+            /* updaten */
+            showInformation(entries);
+        });
+
+        currentLoadingThread.start();
     }
 
     /**
@@ -554,6 +583,8 @@ public class WPUI extends Frame {
         table.setModel(model);
         table.setRowSorter(new TableRowSorter<>(model));
 
+        hideLoading();
+
         /* Daten neu laden */
         reload();
     }
@@ -591,6 +622,20 @@ public class WPUI extends Frame {
         /* anzeigen */
         selectedSumLabel[0].setText("Ausgewähltes Personal: " + totalStaff);
         selectedSumLabel[1].setText("Ausgewählte Rüstzeit: " + preparationSum.toString() + "h");
+    }
+
+    private void hideLoading() {
+        tablePanel.remove(loadingLabel);
+        tablePanel.add(tableScrollPane);
+        tablePanel.validate();
+        tablePanel.repaint();
+    }
+
+    private void showLoading() {
+        tablePanel.remove(tableScrollPane);
+        tablePanel.add(loadingLabel);
+        tablePanel.validate();
+        tablePanel.repaint();
     }
 
     /**
