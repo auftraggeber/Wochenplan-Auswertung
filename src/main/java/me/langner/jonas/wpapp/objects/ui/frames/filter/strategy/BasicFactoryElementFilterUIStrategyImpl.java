@@ -13,7 +13,7 @@ import java.util.Vector;
 /**
  * Eine Basisimplementation der Funktionen des {@link me.langner.jonas.wpapp.objects.ui.frames.filter.FactoryElementFilterUI}s,
  * die für die Listenverwaltung zuständig ist.
- * @param <T> Der Typ der Elemente, die in den Listen stehen.
+ * @param <T> Der Typ der Elemente, die den Listen stehen.
  * @author Jonas Langner
  * @version 0.1.0
  * @since 17.10.22
