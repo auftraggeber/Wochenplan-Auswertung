@@ -41,14 +41,14 @@ public class WPAPP {
      */
     public static String getShiftName(int i) throws IllegalStateException {
         switch (i) {
-            case 0:
+            case SHIFT_EARLY:
                 return "FS";
-            case 1:
+            case SHIFT_LATE:
                 return "SS";
-            case 2:
+            case SHIFT_NIGHT:
                 return "NS";
             default:
-                throw new IllegalStateException("The integer has to be 0,1 or 2. Got: " + i);
+                throw new IllegalStateException("The integer has to be " + SHIFT_EARLY + "," + SHIFT_LATE + " or " + SHIFT_NIGHT + ". Got: " + i);
         }
     }
 
